@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="24dp"
+    android:background="#181818">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LOS APKPOCALÍPTICOS"
+        android:textColor="#FFD600"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:id="@+id/tvPlayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Jugador"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:id="@+id/tvBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Saldo: 250"
+        android:textColor="#76FF03"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="30dp" />
+
+    <!-- RODILLOS -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="30dp">
+
+        <TextView
+            android:id="@+id/tvReel1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="?"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:background="#303030"
+            android:layout_margin="4dp" />
+
+        <TextView
+            android:id="@+id/tvReel2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="?"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:background="#303030"
+            android:layout_margin="4dp" />
+
+        <TextView
+            android:id="@+id/tvReel3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="?"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:background="#303030"
+            android:layout_margin="4dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvBet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Apuesta: 25"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:layout_marginBottom="10dp" />
+
+    <!-- APUESTAS -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="25dp">
+
+        <Button
+            android:id="@+id/btnBet10"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="10" />
+
+        <Button
+            android:id="@+id/btnBet25"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="25" />
+
+        <Button
+            android:id="@+id/btnBet50"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="50" />
+
+    </LinearLayout>
+
+    <!-- TEMPORAL: después será la palanca -->
+
+    <Button
+        android:id="@+id/btnSpin"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="TIRAR DE LA PALANCA"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="#FFD600"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginTop="25dp" />
+
+</LinearLayout>
