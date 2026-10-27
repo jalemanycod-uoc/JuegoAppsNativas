@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Saldo: 100"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <!-- Los 3 rodillos y la palanca en una fila.
+         layout_weight reparte el ancho para que se adapte a cualquier pantalla -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/ivReel1"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:src="@drawable/gas_mask" />
+
+        <ImageView
+            android:id="@+id/ivReel2"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:src="@drawable/radioactive" />
+
+        <ImageView
+            android:id="@+id/ivReel3"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:src="@drawable/skull" />
+
+        <ImageView
+            android:id="@+id/ivLever"
+            android:layout_width="0dp"
+            android:layout_height="140dp"
+            android:layout_weight="0.6"
+            android:src="@drawable/lever" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Elige tu apuesta" />
+
+    <RadioGroup
+        android:id="@+id/rgBets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rbBet10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="10" />
+
+        <RadioButton
+            android:id="@+id/rbBet25"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="25" />
+
+        <RadioButton
+            android:id="@+id/rbBet50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="50" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnSpin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Girar" />
+</LinearLayout>
