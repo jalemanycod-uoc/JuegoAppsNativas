@@ -70,10 +70,10 @@ class GameActivity : AppCompatActivity() {
         val symbol2 = Symbol.values().random()
         val symbol3 = Symbol.values().random()
 
-        // Los rodillos se paran de derecha a izquierda (cada uno medio segundo más tarde)
-        reelAnimator.animateReel(ivReel3, symbol3, 1000) { }
+        // Los rodillos se paran de izquierda a derecha (cada uno medio segundo más tarde)
+        reelAnimator.animateReel(ivReel1, symbol1, 1000) { }
         reelAnimator.animateReel(ivReel2, symbol2, 1500) { }
-        reelAnimator.animateReel(ivReel1, symbol1, 2000) {
+        reelAnimator.animateReel(ivReel3, symbol3, 2000) {
             // Cuando para el último rodillo, se puede volver a jugar
             ivLever.isEnabled = true
             btnSpin.isEnabled = true
