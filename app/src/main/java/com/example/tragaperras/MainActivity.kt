@@ -26,8 +26,9 @@ class MainActivity : AppCompatActivity() {
         )
         lvBestScores.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, bestScores)
 
+        // El botón Jugar abre la pantalla de juego
         btnPlay.setOnClickListener {
-            // Lo programaremos cuando creemos la pantalla de juego
+            startActivity(Intent(this, GameActivity::class.java))
         }
 
         btnHistory.setOnClickListener {
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity() {
     // Qué hace cada opción del menú
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.menu_play -> startActivity(Intent(this, GameActivity::class.java))
             R.id.menu_exit -> finishAffinity()
         }
         return true
