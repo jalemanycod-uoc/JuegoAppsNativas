@@ -7,12 +7,21 @@ import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HistoryActivity : AppCompatActivity() {
+
+    private lateinit var lvHistory: ListView
+    private lateinit var repository: GameRepository
+    private val disposables = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +35,11 @@ class HistoryActivity : AppCompatActivity() {
             insets
         }
 
-        // Usamos la Toolbar del diseño como barra de acción
+        // Se usa la Toolbar del diseño como barra de acción
         setSupportActionBar(findViewById(R.id.toolbar))
+
+        repository = GameRepository(this)
+        lvHistory = findViewById(R.id.lvHistory)
 
         val btnBack = findViewById<Button>(R.id.btnBack)
         val btnBackToGame = findViewById<Button>(R.id.btnBackToGame)
@@ -39,19 +51,47 @@ class HistoryActivity : AppCompatActivity() {
         btnBackToGame.setOnClickListener {
             startActivity(Intent(this, GameActivity::class.java))
         }
+    }
 
+    // Cada vez que se ve la pantalla, recargamos el historial
+    override fun onResume() {
+        super.onResume()
         loadHistory()
     }
 
+    // Lee todas las tiradas de la base de datos (con RxJava) y las muestra
     fun loadHistory() {
-        // Datos de prueba. Más adelante saldrán de SQLite
-        val history = listOf(
-            "27/10 17:05 | 10 | +20 | 120",
-            "27/10 17:04 | 25 | 0 | 100",
-            "27/10 17:02 | 50 | +75 | 125"
+        disposables.add(
+            repository.getHistory().subscribe(
+                { games ->
+                    val dateFormat = SimpleDateFormat("dd/MM HH:mm", Locale.getDefault())
+
+                    // Convierte cada tirada en una línea de texto
+                    val lines = mutableListOf<String>()
+                    for (game in games) {
+                        val date = dateFormat.format(Date(game.timestamp))
+                        val prize = if (game.prize > 0) "+${game.prize}" else "0"
+                        lines.add("${game.playerName} | $date | ${game.bet} | $prize | ${game.balanceAfter}")
+                    }
+
+                    if (lines.isEmpty()) {
+                        lines.add("Todavía no hay partidas")
+                    }
+
+                    lvHistory.adapter =
+                        ArrayAdapter(this, android.R.layout.simple_list_item_1, lines)
+                },
+                { error ->
+                    Toast.makeText(this, "Error al leer el historial", Toast.LENGTH_SHORT).show()
+                }
+            )
         )
-        val lvHistory = findViewById<ListView>(R.id.lvHistory)
-        lvHistory.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, history)
+    }
+
+    // Al cerrar la pantalla, se cancelann las llamadas de RxJava
+    override fun onDestroy() {
+        super.onDestroy()
+        disposables.clear()
     }
 
     // Crea el menú de la barra de acción
@@ -65,6 +105,7 @@ class HistoryActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.menu_home -> startActivity(Intent(this, MainActivity::class.java))
             R.id.menu_play -> startActivity(Intent(this, GameActivity::class.java))
+            R.id.menu_settings -> startActivity(Intent(this, SettingsActivity::class.java))
             R.id.menu_exit -> finishAffinity()
         }
         return true
