@@ -3,6 +3,7 @@ package com.example.tragaperras
 // Datos de una tirada. Una data class sirve solo para guardar datos
 data class GameResult(
     val id: Long = 0,          // número de la partida en la base de datos (más adelante)
+    val playerName: String = "",  // nombre del jugador
     val timestamp: Long,       // fecha y hora de la tirada, en milisegundos
     val bet: Int,              // apuesta
     val reel1: Symbol,         // símbolo del rodillo 1
