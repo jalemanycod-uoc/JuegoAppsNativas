@@ -14,13 +14,20 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class GameActivity : AppCompatActivity() {
 
     private var balance = GameRules.INITIAL_BALANCE
     private var selectedBet = 10
+    private var playerName = "Jugador"
     private val slotMachine = SlotMachineEngine()
     private val reelAnimator = ReelAnimator()
+
+    // Acceso a la base de datos
+    private lateinit var repository: GameRepository
+    // Guarda las llamadas de RxJava para cancelarlas al cerrar la pantalla
+    private val disposables = CompositeDisposable()
 
     private lateinit var tvBalance: TextView
     private lateinit var ivReel1: ImageView
@@ -44,6 +51,13 @@ class GameActivity : AppCompatActivity() {
         // Usamos la Toolbar del diseño como barra de acción
         setSupportActionBar(findViewById(R.id.toolbar))
 
+        // Nombre del jugador que llega desde la pantalla de bienvenida
+        val nameFromWelcome = intent.getStringExtra("playerName")
+        if (!nameFromWelcome.isNullOrBlank()) {
+            playerName = nameFromWelcome
+        }
+        supportActionBar?.title = "Partida de $playerName"
+
         tvBalance = findViewById(R.id.tvBalance)
         val rgBets = findViewById<RadioGroup>(R.id.rgBets)
         ivReel1 = findViewById(R.id.ivReel1)
@@ -54,7 +68,21 @@ class GameActivity : AppCompatActivity() {
 
         updateBalance()
 
-        // Cuando se elige una apuesta, guardamos su valor
+        // Lectura del saldo guardado en la base de datos
+        repository = GameRepository(this)
+        disposables.add(
+            repository.getBalance().subscribe(
+                { savedBalance ->
+                    balance = savedBalance
+                    updateBalance()
+                },
+                { error ->
+                    Toast.makeText(this, "Error al leer el saldo", Toast.LENGTH_SHORT).show()
+                }
+            )
+        )
+
+        // Cuando se elige una apuesta, se guarda su valor
         rgBets.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbBet10 -> onBetSelected(10)
@@ -79,21 +107,41 @@ class GameActivity : AppCompatActivity() {
             return
         }
 
-        // Desactivamos la palanca y el botón para que no se pueda girar dos veces a la vez
+        // Desactivar la palanca y el botón para que no se pueda girar dos veces a la vez
         ivLever.isEnabled = false
         btnSpin.isEnabled = false
 
-        // La máquina decide el resultado ANTES de animar,
-        // así cada rodillo sabe en qué símbolo tiene que parar
-        val result = slotMachine.spin(selectedBet, balance)
+        // Copy() hace una copia del resultado añadiéndole el nombre del jugador
+        val result = slotMachine.spin(selectedBet, balance).copy(playerName = playerName)
 
         // Los rodillos se paran de izquierda a derecha
         reelAnimator.animateReel(ivReel1, result.reel1, 1000) { }
         reelAnimator.animateReel(ivReel2, result.reel2, 1500) { }
         reelAnimator.animateReel(ivReel3, result.reel3, 2000) {
-            // Cuando para el último rodillo, mostramos el resultado
+            // Cuando para el último rodillo, mostramos y guardamos el resultado
             renderResult(result)
+            saveResult(result)
         }
+    }
+
+    // Se guarda la partida y el saldo acumulado en la base de datos (con RxJava)
+    private fun saveResult(result: GameResult) {
+        disposables.add(
+            repository.saveGame(result).subscribe(
+                { },
+                { error ->
+                    Toast.makeText(this, "Error al guardar la partida", Toast.LENGTH_SHORT).show()
+                }
+            )
+        )
+        disposables.add(
+            repository.saveBalance(result.balanceAfter).subscribe(
+                { },
+                { error ->
+                    Toast.makeText(this, "Error al guardar el saldo", Toast.LENGTH_SHORT).show()
+                }
+            )
+        )
     }
 
     // Actualiza el saldo y muestra el aviso que toque
@@ -122,11 +170,11 @@ class GameActivity : AppCompatActivity() {
         tvBalance.text = "Saldo: $balance"
     }
 
-    // ---------- Avisos (popups) ----------
+    // Avisos
 
     fun showWinPopup(prize: Int) {
         AlertDialog.Builder(this)
-            .setTitle("Dos iguales!")
+            .setTitle("¡Dos iguales!")
             .setMessage("Recuperas tu apuesta: +$prize monedas")
             .setPositiveButton("Continuar", null)
             .show()
@@ -134,7 +182,7 @@ class GameActivity : AppCompatActivity() {
 
     fun showJackpotPopup(prize: Int) {
         AlertDialog.Builder(this)
-            .setTitle("JACKPOT!")
+            .setTitle("¡JACKPOT!")
             .setMessage("+$prize monedas")
             .setPositiveButton("Cobrar", null)
             .show()
@@ -156,6 +204,8 @@ class GameActivity : AppCompatActivity() {
             .setPositiveButton("Reiniciar") { _, _ ->
                 balance = GameRules.INITIAL_BALANCE
                 updateBalance()
+                // Se guarda el saldo inicial en la base de datos
+                disposables.add(repository.resetBalance().subscribe({ }, { }))
             }
             .setNegativeButton("Salir") { _, _ ->
                 finishAffinity()
@@ -163,10 +213,11 @@ class GameActivity : AppCompatActivity() {
             .show()
     }
 
-    // Si se cierra la pantalla, paramos la animación
+    // Si se cierra la pantalla, se para la animación y las llamadas de RxJava
     override fun onDestroy() {
         super.onDestroy()
         reelAnimator.reset()
+        disposables.clear()
     }
 
     // Crea el menú de la barra de acción
@@ -175,7 +226,7 @@ class GameActivity : AppCompatActivity() {
         return true
     }
 
-    // Qué hace cada opción del menú
+    // Las opciones del menú
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_home -> startActivity(Intent(this, MainActivity::class.java))
