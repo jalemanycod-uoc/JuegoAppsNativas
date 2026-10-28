@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_play -> startActivity(Intent(this, GameActivity::class.java))
+            R.id.menu_settings -> startActivity(Intent(this, SettingsActivity::class.java))
             R.id.menu_history -> startActivity(Intent(this, HistoryActivity::class.java)) // NUEVO
             R.id.menu_exit -> finishAffinity()
         }
