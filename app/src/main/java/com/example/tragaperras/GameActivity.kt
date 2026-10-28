@@ -213,7 +213,11 @@ class GameActivity : AppCompatActivity() {
                 disposables.add(repository.startNewGame().subscribe({ }, { }))
             }
             .setNegativeButton("Salir") { _, _ ->
-                finishAffinity()
+                // Vuelve a la pantalla inicial del juego
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                startActivity(intent)
+                finish()
             }
             .show()
     }
