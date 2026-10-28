@@ -12,27 +12,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.APKpocalipticos">
 
+        <!-- Pantalla de bienvenida (Splash) configurada como el inicio de la app -->
         <activity
             android:name=".SplashActivity"
-            android:exported="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
+        <!-- Actividad principal del juego dentro del paquete ui -->
         <activity
             android:name=".ui.GameActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- MainActivity por si tus compis la usan como menú secundario -->
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
 
-    </  application>
+    </application>
 
 </manifest>
