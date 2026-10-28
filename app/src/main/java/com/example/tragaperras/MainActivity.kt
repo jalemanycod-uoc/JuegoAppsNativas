@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                     val lines = mutableListOf<String>()
                     for (game in games) {
                         val date = dateFormat.format(Date(game.timestamp))
-                        lines.add("${game.playerName} - $date - ${game.balanceAfter} monedas")
+                        lines.add("${game.playerName} - $date - máximo ${game.balanceAfter} monedas")
                     }
 
                     if (lines.isEmpty()) {
