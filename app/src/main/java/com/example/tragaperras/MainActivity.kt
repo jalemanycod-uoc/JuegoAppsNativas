@@ -7,13 +7,27 @@ import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge() // NUEVO
         setContentView(R.layout.activity_main)
+
+        // NUEVO: deja espacio para la barra de estado y la barra de navegación del móvil
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        // NUEVO: usamos la Toolbar del diseño como barra de acción
+        setSupportActionBar(findViewById(R.id.toolbar))
 
         val btnPlay = findViewById<Button>(R.id.btnPlay)
         val btnHistory = findViewById<Button>(R.id.btnHistory)
@@ -31,8 +45,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, GameActivity::class.java))
         }
 
+        // NUEVO: el botón Historial abre la pantalla de historial
         btnHistory.setOnClickListener {
-            // Lo programaremos cuando creemos la pantalla de historial
+            startActivity(Intent(this, HistoryActivity::class.java))
         }
     }
 
@@ -46,6 +61,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_play -> startActivity(Intent(this, GameActivity::class.java))
+            R.id.menu_history -> startActivity(Intent(this, HistoryActivity::class.java)) // NUEVO
             R.id.menu_exit -> finishAffinity()
         }
         return true
