@@ -7,10 +7,14 @@
 
     <!-- Barra de acción -->
     <com.google.android.material.appbar.MaterialToolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimaryContainer" />
+        android:background="@color/toolbar_blue"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:titleTextColor="@color/white"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <!-- Contenido de la pantalla -->
     <LinearLayout
