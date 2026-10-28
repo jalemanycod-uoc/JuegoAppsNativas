@@ -5,22 +5,23 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-// Crea y gestiona la base de datos SQLite de l'app
+// Crea y gestiona la base de datos SQLite de la app
 class DatabaseHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
         const val DATABASE_NAME = "tragaperras.db"
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2   // NUEVO: subimos la versión porque cambian las tablas
     }
 
-    // Crea las tablas (se ejecuta solo la primera vez)
+    // Crea la tablas y se ejecuta solo la primera vez
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(
             """
             CREATE TABLE player_state (
                 id INTEGER PRIMARY KEY,
-                balance INTEGER NOT NULL
+                balance INTEGER NOT NULL,
+                game_number INTEGER NOT NULL
             )
             """
         )
@@ -29,6 +30,7 @@ class DatabaseHelper(context: Context) :
             """
             CREATE TABLE game_results (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                game_number INTEGER NOT NULL,
                 player_name TEXT,
                 timestamp INTEGER NOT NULL,
                 bet INTEGER NOT NULL,
@@ -42,20 +44,23 @@ class DatabaseHelper(context: Context) :
             """
         )
 
-        // Creación de la única fila del jugador con el saldo inicial
-        db.execSQL("INSERT INTO player_state (id, balance) VALUES (1, ${GameRules.INITIAL_BALANCE})")
+        // Se crea la única fila del jugador: saldo inicial y partida número 1
+        db.execSQL(
+            "INSERT INTO player_state (id, balance, game_number) VALUES (1, ${GameRules.INITIAL_BALANCE}, 1)"
+        )
     }
 
-    // Se ejecuta si algún día cambiamos DATABASE_VERSION: borra las tablas y las vuelve a crear
+    // Se ejecuta si cambiamos DATABASE_VERSION: borra las tablas y las vuelve a crear
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS game_results")
         db.execSQL("DROP TABLE IF EXISTS player_state")
         onCreate(db)
     }
 
-    // Guarda una partida. Devuelve el id que le ha dado la base de datos
+    // Guarda una tirada con el número de la partida actual
     fun insertGame(result: GameResult): Long {
         val values = ContentValues()
+        values.put("game_number", readGameNumber())   // NUEVO
         values.put("player_name", result.playerName)
         values.put("timestamp", result.timestamp)
         values.put("bet", result.bet)
@@ -68,14 +73,22 @@ class DatabaseHelper(context: Context) :
         return writableDatabase.insert("game_results", null, values)
     }
 
-    // Todas las partidas, de la más nueva a la más antigua
+    // Todas las tiradas, de la más nueva a la más antigua
     fun queryHistory(): List<GameResult> {
         return readGames("SELECT * FROM game_results ORDER BY timestamp DESC")
     }
 
-    // Las 5 mejores puntuaciones (las partidas con el saldo final más alto)
+    // Las 5 mejores partidas (la tirada con más saldo de cada partida)
     fun queryBestResults(): List<GameResult> {
-        return readGames("SELECT * FROM game_results ORDER BY balance_after DESC LIMIT 5")
+        return readGames(
+            """
+            SELECT *, MAX(balance_after)
+            FROM game_results
+            GROUP BY game_number
+            ORDER BY balance_after DESC
+            LIMIT 5
+            """
+        )
     }
 
     // Lee el saldo guardado del jugador
@@ -94,6 +107,24 @@ class DatabaseHelper(context: Context) :
         val values = ContentValues()
         values.put("balance", balance)
         writableDatabase.update("player_state", values, "id = 1", null)
+    }
+
+    // Lee el número de la partida actual
+    fun readGameNumber(): Int {
+        var gameNumber = 1
+        val cursor = readableDatabase.rawQuery("SELECT game_number FROM player_state WHERE id = 1", null)
+        if (cursor.moveToFirst()) {
+            gameNumber = cursor.getInt(0)
+        }
+        cursor.close()
+        return gameNumber
+    }
+
+    // Empieza una partida nueva sumando 1 al contador
+    fun startNewGame() {
+        writableDatabase.execSQL(
+            "UPDATE player_state SET game_number = game_number + 1, balance = ${GameRules.INITIAL_BALANCE} WHERE id = 1"
+        )
     }
 
     // Ejecuta una consulta SELECT y convierte cada fila en un GameResult

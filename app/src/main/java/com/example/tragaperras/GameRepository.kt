@@ -51,4 +51,11 @@ class GameRepository(context: Context) {
     fun resetBalance(): Completable {
         return saveBalance(GameRules.INITIAL_BALANCE)
     }
+
+    // Empieza una partida nueva (suma 1 al contador de partidas)
+    fun startNewGame(): Completable {
+        return Completable.fromAction { db.startNewGame() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
 }

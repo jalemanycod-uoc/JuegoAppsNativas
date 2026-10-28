@@ -71,10 +71,19 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Se pasa el nombre a la pantalla de juego con putExtra
-        val intent = Intent(this, GameActivity::class.java)
-        intent.putExtra("playerName", name)
-        startActivity(intent)
+        // Empezieza una partida nueva en la base de datos y cuando termina, se abre la pantalla de juego con el nombre
+        disposables.add(
+            repository.startNewGame().subscribe(
+                {
+                    val intent = Intent(this, GameActivity::class.java)
+                    intent.putExtra("playerName", name)
+                    startActivity(intent)
+                },
+                { error ->
+                    Toast.makeText(this, "Error al empezar la partida", Toast.LENGTH_SHORT).show()
+                }
+            )
+        )
     }
 
     // Lee las 5 mejores partidas de la base de datos (con RxJava) y las muestra

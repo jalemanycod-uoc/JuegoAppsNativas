@@ -206,6 +206,7 @@ class GameActivity : AppCompatActivity() {
                 updateBalance()
                 // Se guarda el saldo inicial en la base de datos
                 disposables.add(repository.resetBalance().subscribe({ }, { }))
+                disposables.add(repository.startNewGame().subscribe({ }, { }))
             }
             .setNegativeButton("Salir") { _, _ ->
                 finishAffinity()
