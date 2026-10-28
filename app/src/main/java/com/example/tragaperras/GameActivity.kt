@@ -158,7 +158,12 @@ class GameActivity : AppCompatActivity() {
 
         when (result.outcome) {
             Outcome.JACKPOT -> showJackpotPopup(result.prize)
-            Outcome.WIN -> showWinPopup(result.prize)
+            Outcome.WIN -> {
+                // Miramos los símbolos: si al quitar los repetidos queda 1, eran 3 iguales
+                val symbols = listOf(result.reel1, result.reel2, result.reel3)
+                val threeOfAKind = symbols.distinct().size == 1
+                showWinPopup(result.prize, threeOfAKind)
+            }
             Outcome.LOSS -> {
                 // Si no queda saldo ni para la apuesta mínima, se acaba el juego
                 if (balance < GameRules.VALID_BETS.min()) {
@@ -176,10 +181,21 @@ class GameActivity : AppCompatActivity() {
 
     // Avisos
 
-    fun showWinPopup(prize: Int) {
+    fun showWinPopup(prize: Int, threeOfAKind: Boolean) {
+        // threeOfAKind es true si han salido 3 iguales, y false si han salido 2
+        val title: String
+        val message: String
+        if (threeOfAKind) {
+            title = "Tres iguales!"
+            message = "+$prize monedas"
+        } else {
+            title = "Dos iguales!"
+            message = "+$prize monedas"
+        }
+
         AlertDialog.Builder(this)
-            .setTitle("¡Dos iguales!")
-            .setMessage("Recuperas tu apuesta: +$prize monedas")
+            .setTitle(title)
+            .setMessage(message)
             .setPositiveButton("Continuar", null)
             .show()
     }

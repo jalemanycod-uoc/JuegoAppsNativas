@@ -36,10 +36,10 @@ class SlotMachineEngine {
 
     // Decide si es victoria, derrota o jackpot
     private fun determineOutcome(symbols: List<Symbol>): Outcome {
-        return when (symbols.distinct().size) {
-            1 -> Outcome.JACKPOT
-            2 -> Outcome.WIN
-            else -> Outcome.LOSS
+        return when {
+            GameRules.isJackpot(symbols) -> Outcome.JACKPOT   // 3 símbolos del jackpot
+            symbols.distinct().size <= 2 -> Outcome.WIN       // 2 o 3 iguales
+            else -> Outcome.LOSS                              // ninguno igual
         }
     }
 }
