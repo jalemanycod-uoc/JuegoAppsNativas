@@ -9,7 +9,7 @@ object GameRules {
     const val REEL_COUNT = 3             // número de rodillos
     const val SYMBOL_COUNT = 6           // número de símbolos distintos
 
-    const val MULTIPLIER_TWO = 1         // 2 símbolos iguales: apuesta x2
+    const val MULTIPLIER_TWO = 2         // 2 símbolos iguales: apuesta x2
     const val MULTIPLIER_THREE = 5      // 3 símbolos iguales: apuesta x10
 
     // Calcula cuántas monedas se ganan con estos símbolos y esta apuesta
