@@ -75,6 +75,10 @@ class GameActivity : AppCompatActivity() {
                 { savedBalance ->
                     balance = savedBalance
                     updateBalance()
+                    // Si no queda saldo ni para la apuesta mínima, se acaba el juego
+                    if (balance < GameRules.VALID_BETS.min()) {
+                        showGameOver()
+                    }
                 },
                 { error ->
                     Toast.makeText(this, "Error al leer el saldo", Toast.LENGTH_SHORT).show()
