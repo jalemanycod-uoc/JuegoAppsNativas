@@ -9,7 +9,10 @@ import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 
 class GameActivity : AppCompatActivity() {
 
@@ -25,7 +28,18 @@ class GameActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge() // NUEVO
         setContentView(R.layout.activity_game)
+
+        // NUEVO: deja espacio para la barra de estado y la barra de navegación del móvil
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        // NUEVO: usamos la Toolbar del diseño como barra de acción
+        setSupportActionBar(findViewById(R.id.toolbar))
 
         val tvBalance = findViewById<TextView>(R.id.tvBalance)
         val rgBets = findViewById<RadioGroup>(R.id.rgBets)
@@ -46,7 +60,7 @@ class GameActivity : AppCompatActivity() {
             }
         }
 
-        // La palanca y el botón girar hacen lo mismo
+        // La palanca y el botón Girar hacen lo mismo
         ivLever.setOnClickListener { onLeverPulled() }
         btnSpin.setOnClickListener { onLeverPulled() }
     }
@@ -96,6 +110,7 @@ class GameActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_home -> startActivity(Intent(this, MainActivity::class.java))
+            R.id.menu_history -> startActivity(Intent(this, HistoryActivity::class.java)) // NUEVO
             R.id.menu_exit -> finishAffinity()
         }
         return true
