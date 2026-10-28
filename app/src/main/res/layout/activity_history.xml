@@ -3,41 +3,54 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fecha y hora | Apuesta | Victoria | Saldo"
-        android:textStyle="bold" />
-
-    <!-- layout_weight="1" hace que la lista ocupe el espacio que sobra
-         y los botones queden abajo del todo -->
-
-    <ListView
-        android:id="@+id/lvHistory"
+    <!-- Barra de acción -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimaryContainer" />
 
+    <!-- Contenido de la pantalla -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Atrás" />
+            android:text="Fecha y hora | Apuesta | Victoria | Saldo"
+            android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/btnBackToGame"
-            android:layout_width="0dp"
+        <!-- layout_weight="1" hace que la lista ocupe el espacio que sobra
+             y los botones queden abajo del todo -->
+        <ListView
+            android:id="@+id/lvHistory"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Volver al juego" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnBack"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Atrás" />
+
+            <Button
+                android:id="@+id/btnBackToGame"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Volver al juego" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
