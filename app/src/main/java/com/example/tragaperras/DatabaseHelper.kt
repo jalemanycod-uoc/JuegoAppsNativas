@@ -75,7 +75,7 @@ class DatabaseHelper(context: Context) :
 
     // Todas las tiradas, de la más nueva a la más antigua
     fun queryHistory(): List<GameResult> {
-        return readGames("SELECT * FROM game_results ORDER BY timestamp DESC")
+        return readGames("SELECT * FROM game_results ORDER BY timestamp DESC LIMIT 250")
     }
 
     // Las 5 mejores partidas (la tirada con más saldo de cada partida)
