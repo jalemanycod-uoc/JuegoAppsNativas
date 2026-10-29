@@ -28,7 +28,7 @@
             android:id="@+id/tvBalance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Saldo: 100"
+            android:text="Saldo: 250"
             android:textSize="22sp"
             android:textStyle="bold" />
 
