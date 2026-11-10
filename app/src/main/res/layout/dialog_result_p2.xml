@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="20dp"
+    android:background="@drawable/dialog_result_bg_p2">
+
+    <TextView
+        android:id="@+id/tvResultTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="TRES IGUALES"
+        android:textColor="#E3C542"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvResultMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="+50 fichas"
+        android:textColor="#EEE7CE"
+        android:textSize="17sp" />
+
+    <!-- Resultado de la tirada -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="@drawable/dialog_reels_bg_p2">
+
+        <ImageView
+            android:id="@+id/ivResult1"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_margin="3dp"
+            android:padding="4dp"
+            android:scaleType="centerInside"
+            android:contentDescription="@null"
+            android:background="@drawable/reel_window_v3" />
+
+        <ImageView
+            android:id="@+id/ivResult2"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_margin="3dp"
+            android:padding="4dp"
+            android:scaleType="centerInside"
+            android:contentDescription="@null"
+            android:background="@drawable/reel_window_v3" />
+
+        <ImageView
+            android:id="@+id/ivResult3"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_margin="3dp"
+            android:padding="4dp"
+            android:scaleType="centerInside"
+            android:contentDescription="@null"
+            android:background="@drawable/reel_window_v3" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvResultBalance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:text="Saldo: 300"
+        android:textColor="#B8DB6F"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btnResultPrimary"
+        android:layout_width="230dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/dialog_primary_button_p2"
+        android:backgroundTint="@null"
+        app:backgroundTint="@null"
+        android:text="VOLVER A APOSTAR"
+        android:textColor="#11130F"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btnResultSecondary"
+        android:layout_width="230dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/dialog_secondary_button_p2"
+        android:backgroundTint="@null"
+        app:backgroundTint="@null"
+        android:text="SALIR"
+        android:textColor="#EEE7CE"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+</LinearLayout>

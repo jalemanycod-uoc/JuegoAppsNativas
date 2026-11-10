@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title_p2">AJUSTES</string>
+    <string name="settings_subtitle_p2">CONFIGURACIÓN DEL YERMO</string>
+    <string name="settings_music_p2">MÚSICA</string>
+    <string name="settings_effects_p2">EFECTOS DE SONIDO</string>
+    <string name="settings_language_p2">IDIOMA</string>
+    <string name="settings_spanish_p2">Español</string>
+    <string name="settings_catalan_p2">Català</string>
+    <string name="settings_english_p2">English</string>
+    <string name="settings_back_p2">VOLVER</string>
+    <string name="settings_note_p2">Los controles de audio e idioma se conectarán con sus respectivas funciones.</string>
+</resources>

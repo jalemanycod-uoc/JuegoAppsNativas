@@ -38,6 +38,7 @@ class SettingsActivity : AppCompatActivity() {
 
         // Usamos la Toolbar del diseño como barra de acción
         setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.title = ""
 
         // Atrás: cierra esta pantalla y vuelve a la anterior
         val btnBack = findViewById<Button>(R.id.btnBack)

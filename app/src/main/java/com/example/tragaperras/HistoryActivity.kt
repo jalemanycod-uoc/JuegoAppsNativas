@@ -1,12 +1,16 @@
 package com.example.tragaperras
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -17,207 +21,149 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/** Historial real de SQLite, con una tarjeta reutilizable por tirada. */
 class HistoryActivity : AppCompatActivity() {
 
     private lateinit var lvHistory: ListView
+    private lateinit var emptyHistory: TextView
     private lateinit var repository: GameRepository
     private val disposables = CompositeDisposable()
+    private val fromHome by lazy { intent.getBooleanExtra("fromHome", false) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         enableEdgeToEdge()
         setContentView(R.layout.activity_history)
 
-        // Deja espacio para la barra de estado y la barra de navegación del móvil
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-
-            val systemBars =
-                insets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            v.setPadding(
-                systemBars.left,
-                systemBars.top,
-                systemBars.right,
-                systemBars.bottom
-            )
-
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
             insets
         }
 
-        // Se usa la Toolbar del diseño como barra de acción
         setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.title = ""
 
         repository = GameRepository(this)
-
         lvHistory = findViewById(R.id.lvHistory)
+        emptyHistory = findViewById(R.id.tvHistoryEmpty)
 
-        val btnBack = findViewById<Button>(R.id.btnBack)
-        val btnBackToGame = findViewById<Button>(R.id.btnBackToGame)
-
-        // Atrás: cierra esta pantalla y vuelve a la pantalla anterior
-        btnBack.setOnClickListener {
+        findViewById<View>(R.id.btnBack).setOnClickListener { finish() }
+        findViewById<View>(R.id.btnBackToGame).setOnClickListener {
+            // Cierra la pantalla: vuelve al juego que ya estaba abierto,
+            // sin crear otro GameActivity ni sustituir el nombre del jugador.
             finish()
         }
 
-        /*
-         * Modificación Pere 28/10.
-         *
-         * Antes se creaba una nueva GameActivity al pulsar
-         * "Volver al juego".
-         *
-         * Esa nueva Activity no recibía el nombre del jugador,
-         * por lo que utilizaba el valor por defecto "Jugador".
-         * Las tiradas posteriores podían guardarse en SQLite
-         * con un nombre incorrecto.
-         *
-         * Ahora se cierra HistoryActivity con finish() y se vuelve
-         * a la GameActivity que ya estaba abierta.
-         *
-         * De esta forma se conservan el nombre del jugador,
-         * el saldo y el estado actual de la partida.
-         */
-        btnBackToGame.setOnClickListener {
-            finish()
+        if (fromHome) {
+            findViewById<TextView>(R.id.tvBackToGameLabel).setText(R.string.history_back_home_p2)
+            findViewById<View>(R.id.btnBackToGame).contentDescription =
+                getString(R.string.history_back_home_p2)
         }
     }
 
-    // Cada vez que se ve la pantalla, recargamos el historial
     override fun onResume() {
         super.onResume()
         loadHistory()
     }
 
-    // Lee todas las tiradas de la base de datos mediante RxJava
-    // y las muestra en el ListView
-    fun loadHistory() {
+    private fun loadHistory() {
+        disposables.add(repository.getHistory().subscribe(
+            { games ->
+                val empty = games.isEmpty()
+                emptyHistory.visibility = if (empty) View.VISIBLE else View.GONE
+                lvHistory.visibility = if (empty) View.GONE else View.VISIBLE
+                lvHistory.adapter = HistoryRowsAdapter(games)
+            },
+            {
+                Toast.makeText(this, R.string.history_error_p2, Toast.LENGTH_SHORT).show()
+            }
+        ))
+    }
 
-        disposables.add(
+    private inner class HistoryRowsAdapter(games: List<GameResult>) :
+        ArrayAdapter<GameResult>(this@HistoryActivity, R.layout.history_row_p2, games) {
 
-            repository.getHistory().subscribe(
+        private val dateFormatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
-                { games ->
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val row = convertView ?: LayoutInflater.from(context)
+                .inflate(R.layout.history_row_p2, parent, false)
+            val game = getItem(position) ?: return row
 
-                    val dateFormat =
-                        SimpleDateFormat(
-                            "dd/MM HH:mm",
-                            Locale.getDefault()
-                        )
-
-                    // Convierte cada tirada en una línea de texto
-                    val lines = mutableListOf<String>()
-
-                    for (game in games) {
-
-                        val date =
-                            dateFormat.format(
-                                Date(game.timestamp)
-                            )
-
-                        val prize =
-                            if (game.prize > 0) {
-                                "+${game.prize}"
-                            } else {
-                                "0"
-                            }
-
-                        lines.add(
-                            "${game.playerName} | " +
-                                    "$date | " +
-                                    "${game.bet} | " +
-                                    "$prize | " +
-                                    "${game.balanceAfter}"
-                        )
-                    }
-
-                    if (lines.isEmpty()) {
-                        lines.add(
-                            "Todavía no hay partidas"
-                        )
-                    }
-
-                    lvHistory.adapter =
-                        ArrayAdapter(
-                            this,
-                            android.R.layout.simple_list_item_1,
-                            lines
-                        )
-                },
-
-                {
-                    Toast.makeText(
-                        this,
-                        "Error al leer el historial",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+            val isJackpot = game.outcome == Outcome.JACKPOT
+            val isLoss = game.outcome == Outcome.LOSS
+            val color = Color.parseColor(
+                if (isJackpot) "#FFD44E" else if (isLoss) "#FF806E" else "#B7FF70"
             )
-        )
-    }
+            val background = when {
+                isJackpot -> R.drawable.history_row_jackpot_p2
+                isLoss -> R.drawable.history_row_loss_p2
+                else -> R.drawable.history_row_win_p2
+            }
+            row.setBackgroundResource(background)
 
-    // Al cerrar la pantalla se cancelan las llamadas de RxJava
-    override fun onDestroy() {
-        super.onDestroy()
-        disposables.clear()
-    }
+            row.findViewById<TextView>(R.id.tvHistoryDate).text =
+                dateFormatter.format(Date(game.timestamp))
 
-    // Crea el menú de la barra de acción
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-
-        menuInflater.inflate(
-            R.menu.menu_main,
-            menu
-        )
-
-        return true
-    }
-
-    // Define qué hace cada opción del menú
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when (item.itemId) {
-
-            // Volver a la pantalla de inicio
-            R.id.menu_home -> {
-
-                startActivity(
-                    Intent(
-                        this,
-                        MainActivity::class.java
-                    )
-                )
+            row.findViewById<TextView>(R.id.tvHistoryOutcome).apply {
+                text = getString(when {
+                    isJackpot -> R.string.history_jackpot_p2
+                    isLoss -> R.string.history_loss_p2
+                    else -> R.string.history_win_p2
+                })
+                setTextColor(color)
             }
 
-            /*
-             * Modificación Pere 29/10.
-             *
-             * Antes esta opción también creaba una nueva GameActivity
-             * sin transmitir el nombre del jugador.
-             *
-             * Ahora simplemente se cierra HistoryActivity y se vuelve
-             * a la GameActivity existente.
-             */
-            R.id.menu_play -> {
-                finish()
+            row.findViewById<TextView>(R.id.tvHistoryPlayer).text = game.playerName
+
+            // Beneficio NETO: el premio ya incluye la devolución de la apuesta.
+            val net = game.prize - game.bet
+            row.findViewById<TextView>(R.id.tvHistoryDelta).apply {
+                text = getString(R.string.history_net_p2, if (net > 0) "+$net" else "$net")
+                setTextColor(color)
             }
 
-            // Abrir ajustes
-            R.id.menu_settings -> {
-
-                startActivity(
-                    Intent(
-                        this,
-                        SettingsActivity::class.java
-                    )
-                )
-            }
-
-            // Cerrar la aplicación
-            R.id.menu_exit -> {
-                finishAffinity()
-            }
+            row.findViewById<TextView>(R.id.tvHistoryBet).text =
+                getString(R.string.history_bet_p2, game.bet)
+            row.findViewById<TextView>(R.id.tvHistoryBalance).text =
+                getString(R.string.history_balance_p2, game.balanceAfter)
+            return row
         }
+    }
 
+    override fun onDestroy() {
+        disposables.clear()
+        super.onDestroy()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.menu_home -> {
+            startActivity(Intent(this, MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            })
+            finish()
+            true
+        }
+        R.id.menu_play -> {
+            // Conserva la solución de P1: no crear una nueva partida sin nombre.
+            finish()
+            true
+        }
+        R.id.menu_history -> true
+        R.id.menu_settings -> {
+            startActivity(Intent(this, SettingsActivity::class.java))
+            true
+        }
+        R.id.menu_exit -> {
+            finishAffinity()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 }

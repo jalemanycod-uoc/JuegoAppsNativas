@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Contexto de tema exclusivo del desplegable de los tres puntos. -->
+    <style name="ThemeOverlay.Tragaperras.PopupDark" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:colorBackground">#151B14</item>
+        <item name="android:textColorPrimary">#F5EBCF</item>
+        <item name="android:textColorSecondary">#D1C6A5</item>
+        <item name="colorOnSurface">#F5EBCF</item>
+        <item name="popupMenuStyle">@style/Widget.Tragaperras.OverflowDark</item>
+    </style>
+
+    <!-- Esto fija el fondo del popup de AppCompat, no solo el tema de texto. -->
+    <style name="Widget.Tragaperras.OverflowDark" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:popupBackground">@drawable/popup_menu_dark_bg_p2</item>
+    </style>
+</resources>

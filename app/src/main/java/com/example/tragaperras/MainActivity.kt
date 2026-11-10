@@ -2,12 +2,16 @@ package com.example.tragaperras
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ArrayAdapter
-import android.widget.Button
+import android.view.View
+import android.view.WindowManager
 import android.widget.EditText
-import android.widget.ListView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -21,7 +25,8 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
 
     private lateinit var etName: EditText
-    private lateinit var lvBestScores: ListView
+    private lateinit var tvNameError: TextView
+    private lateinit var scoresContainer: LinearLayout
     private lateinit var repository: GameRepository
     private val disposables = CompositeDisposable()
 
@@ -30,42 +35,39 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        // Deja espacio para la barra de estado y la barra de navegación del móvil
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(
-                systemBars.left,
-                systemBars.top,
-                systemBars.right,
-                systemBars.bottom
-            )
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
             insets
         }
 
-        // Hemos usado la Toolbar del diseño como barra de acción
+        // Barra transparente flotante: conserva únicamente los tres puntos.
         setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.title = ""
+
+        // Evita que el teclado aparezca al abrir Inicio y deja desplazar la lista.
+        window.setSoftInputMode(
+            WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN or
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+        )
 
         repository = GameRepository(this)
-
         etName = findViewById(R.id.etName)
-        lvBestScores = findViewById(R.id.lvBestScores)
+        tvNameError = findViewById(R.id.tvNameError)
+        scoresContainer = findViewById(R.id.scoresContainer)
 
-        val btnPlay = findViewById<Button>(R.id.btnPlay)
-        val btnHistory = findViewById<Button>(R.id.btnHistory)
+        etName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!s.isNullOrBlank()) tvNameError.visibility = View.GONE
+            }
+            override fun afterTextChanged(s: Editable?) = Unit
+        })
 
-        // El botón Jugar abre la pantalla de juego con el nombre escrito
-        btnPlay.setOnClickListener {
-            openGame()
-        }
-
-        // El botón Historial abre la pantalla de historial
-        btnHistory.setOnClickListener {
-            startActivity(Intent(this, HistoryActivity::class.java))
-        }
+        findViewById<View>(R.id.btnPlay).setOnClickListener { openGame() }
+        findViewById<View>(R.id.btnHistory).setOnClickListener { openHistory() }
     }
 
-    // onResume se ejecuta cada vez que la pantalla vuelve a verse,
-    // por ejemplo al volver del juego, así las puntuaciones están siempre al día
     override fun onResume() {
         super.onResume()
         loadBestScores()
@@ -73,107 +75,80 @@ class MainActivity : AppCompatActivity() {
 
     fun openGame() {
         val name = etName.text.toString().trim()
-
-        // Si no hay nombre, se avisa y no se abre el juego
         if (name.isEmpty()) {
-            etName.error = "Escribe tu nombre para jugar"
+            // No usar etName.error: el aviso flotante tapaba la placa y JUGAR.
+            tvNameError.visibility = View.VISIBLE
+            etName.requestFocus()
+            return
+        }
+        tvNameError.visibility = View.GONE
+        // NO iniciar una partida nueva ni reiniciar el saldo al navegar.
+        startActivity(Intent(this, GameActivity::class.java).apply {
+            putExtra("playerName", name)
+        })
+    }
+
+    private fun openHistory() {
+        startActivity(Intent(this, HistoryActivity::class.java).apply {
+            putExtra("fromHome", true)
+        })
+    }
+
+    private fun loadBestScores() {
+        disposables.add(repository.getBestResults().subscribe(
+            { games -> renderBestScores(games) },
+            {
+                Toast.makeText(this, R.string.home_scores_error, Toast.LENGTH_SHORT).show()
+            }
+        ))
+    }
+
+    private fun renderBestScores(games: List<GameResult>) {
+        scoresContainer.removeAllViews()
+        if (games.isEmpty()) {
+            val empty = TextView(this).apply {
+                text = getString(R.string.home_scores_empty)
+                setTextColor(android.graphics.Color.parseColor("#F1ECD7"))
+                textSize = 15f
+                setPadding(dp(14), dp(12), dp(14), dp(18))
+            }
+            scoresContainer.addView(empty)
             return
         }
 
-        /*
-         * Modificación Pere 29/11.
-         *
-         * Antes se llamaba a repository.startNewGame() cada vez que el jugador
-         * pulsaba "Jugar". Esa llamada reiniciaba el saldo almacenado en SQLite
-         * al saldo inicial de 250 monedas.
-         *
-         * Se elimina esa llamada para que, si el usuario cierra la aplicación
-         * y vuelve a entrar, GameActivity recupere el saldo que ya estaba
-         * almacenado en la base de datos.
-         *
-         * Una nueva partida con 250 monedas seguirá comenzando cuando el jugador
-         * llegue a Game Over y pulse "Reiniciar".
-         */
-        val intent = Intent(this, GameActivity::class.java)
-        intent.putExtra("playerName", name)
-        startActivity(intent)
+        val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+        val inflater = LayoutInflater.from(this)
+        games.take(5).forEachIndexed { index, result ->
+            val row = inflater.inflate(R.layout.home_score_row_p2, scoresContainer, false)
+            row.findViewById<TextView>(R.id.tvScoreRank).text = (index + 1).toString()
+            row.findViewById<TextView>(R.id.tvScorePlayer).text = result.playerName
+            row.findViewById<TextView>(R.id.tvScoreDate).text = formatter.format(Date(result.timestamp))
+            row.findViewById<TextView>(R.id.tvScoreCoins).text =
+                getString(R.string.home_score_coins, result.balanceAfter)
+            scoresContainer.addView(row)
+        }
     }
 
-    // Lee las 5 mejores partidas de la base de datos (con RxJava) y las muestra
-    private fun loadBestScores() {
-        disposables.add(
-            repository.getBestResults().subscribe(
-                { games ->
-                    val dateFormat =
-                        SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+    private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
 
-                    // Convierte cada partida en una línea de texto
-                    val lines = mutableListOf<String>()
-
-                    for (game in games) {
-                        val date = dateFormat.format(Date(game.timestamp))
-
-                        lines.add(
-                            "${game.playerName} - $date - máximo " +
-                                    "${game.balanceAfter} monedas"
-                        )
-                    }
-
-                    if (lines.isEmpty()) {
-                        lines.add("Todavía no hay partidas")
-                    }
-
-                    lvBestScores.adapter =
-                        ArrayAdapter(
-                            this,
-                            android.R.layout.simple_list_item_1,
-                            lines
-                        )
-                },
-                {
-                    Toast.makeText(
-                        this,
-                        "Error al leer las puntuaciones",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            )
-        )
-    }
-
-    // Al cerrar la pantalla, se cancelan las llamadas de RxJava
     override fun onDestroy() {
-        super.onDestroy()
         disposables.clear()
+        super.onDestroy()
     }
 
-    // Crea el menú de la barra de acción
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
-    // Las opciones del menú
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-
-            R.id.menu_play ->
-                openGame()
-
-            R.id.menu_history ->
-                startActivity(
-                    Intent(this, HistoryActivity::class.java)
-                )
-
-            R.id.menu_settings ->
-                startActivity(
-                    Intent(this, SettingsActivity::class.java)
-                )
-
-            R.id.menu_exit ->
-                finishAffinity()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.menu_play -> { openGame(); true }
+        R.id.menu_history -> { openHistory(); true }
+        R.id.menu_settings -> {
+            startActivity(Intent(this, SettingsActivity::class.java))
+            true
         }
-
-        return true
+        R.id.menu_exit -> { finishAffinity(); true }
+        else -> super.onOptionsItemSelected(item)
     }
 }
