@@ -57,10 +57,14 @@ class ReelView @JvmOverloads constructor(
             // Reducir el CONTENIDO, no las ventanas de la máquina.
             // Los dos ImageView (actual y entrante) usan la misma escala,
             // por lo que se conserva la continuidad del giro y el rebote.
+            // La vista completa se desplaza al girar. No modificar translationY
+            // aqui: rompería el recorrido vertical y el rebote mecánico.
+            // Padding simétrico horizontal y ligera compensación óptica
+            // hacia arriba (sin mover la vista durante la animación).
             scaleType = ImageView.ScaleType.FIT_CENTER
-            setPadding(0, 0, 0, 0)
-            scaleX = 0.82f
-            scaleY = 0.82f
+            setPadding(dp(3), dp(1), dp(3), dp(5))
+            scaleX = 0.79f
+            scaleY = 0.79f
         }
 
     fun setSymbol(symbol: Symbol) {

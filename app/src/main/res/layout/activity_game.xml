@@ -61,20 +61,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <!-- Bordes de la zona de tres rodillos de la ilustración. -->
+                    <!-- La ilustración tiene ventanas laterales algo más abiertas.
+                         Se ensancha la región manteniendo EXACTAMENTE el centro. -->
                     <androidx.constraintlayout.widget.Guideline
                         android:id="@+id/guideReelLeft"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        app:layout_constraintGuide_percent="0.158" />
+                        app:layout_constraintGuide_percent="0.138" />
 
                     <androidx.constraintlayout.widget.Guideline
                         android:id="@+id/guideReelRight"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        app:layout_constraintGuide_percent="0.828" />
+                        app:layout_constraintGuide_percent="0.848" />
 
                     <androidx.constraintlayout.widget.Guideline
                         android:id="@+id/guideReelTop"
@@ -187,7 +188,8 @@
                             android:layout_marginHorizontal="3dp" />
                     </LinearLayout>
 
-                    <!-- Apuestas sobre los tres alojamientos ya dibujados. -->
+                    <!-- El selector se recorta dentro de los alojamientos metálicos.
+                         La apuesta central no se desplaza; los extremos solo 1dp. -->
                     <RadioGroup
                         android:id="@+id/rgBets"
                         android:layout_width="0dp"
@@ -208,7 +210,7 @@
                             android:layout_height="42dp"
                             android:layout_weight="1"
                             android:layout_marginHorizontal="5dp"
-                            android:translationX="-3dp"
+                            android:translationX="-1dp"
                             android:background="@drawable/bet_mockup_selector_p2"
                             android:button="@null"
                             android:checked="true"
@@ -238,7 +240,7 @@
                             android:layout_height="42dp"
                             android:layout_weight="1"
                             android:layout_marginHorizontal="5dp"
-                            android:translationX="-5dp"
+                            android:translationX="1dp"
                             android:background="@drawable/bet_mockup_selector_p2"
                             android:button="@null"
                             android:gravity="center"

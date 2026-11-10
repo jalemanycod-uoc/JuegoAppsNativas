@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Contexto de tema exclusivo del desplegable de los tres puntos. -->
-    <style name="ThemeOverlay.Tragaperras.PopupDark" parent="ThemeOverlay.AppCompat.Dark">
-        <item name="android:colorBackground">#151B14</item>
-        <item name="android:textColorPrimary">#F5EBCF</item>
-        <item name="android:textColorSecondary">#D1C6A5</item>
-        <item name="colorOnSurface">#F5EBCF</item>
-        <item name="popupMenuStyle">@style/Widget.Tragaperras.OverflowDark</item>
+    <!-- Esta familia sustituye a la version V5; NO duplicar los nombres. -->
+    <style name="TextAppearance.Tragaperras.PopupLightText" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">#FFF2D6</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
-    <!-- Esto fija el fondo del popup de AppCompat, no solo el tema de texto. -->
     <style name="Widget.Tragaperras.OverflowDark" parent="Widget.AppCompat.PopupMenu.Overflow">
         <item name="android:popupBackground">@drawable/popup_menu_dark_bg_p2</item>
+    </style>
+
+    <style name="ThemeOverlay.Tragaperras.PopupDark" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:colorBackground">#171B15</item>
+        <item name="android:textColorPrimary">#FFF2D6</item>
+        <item name="android:textColorSecondary">#DDD0B4</item>
+        <item name="colorOnSurface">#FFF2D6</item>
+        <!-- AppCompat + framework, para no heredar el popup claro del tema principal. -->
+        <item name="popupMenuStyle">@style/Widget.Tragaperras.OverflowDark</item>
+        <item name="android:popupMenuStyle">@style/Widget.Tragaperras.OverflowDark</item>
+        <item name="textAppearanceLargePopupMenu">@style/TextAppearance.Tragaperras.PopupLightText</item>
+        <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.Tragaperras.PopupLightText</item>
     </style>
 </resources>
