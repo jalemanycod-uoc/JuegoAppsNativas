@@ -1,145 +1,295 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#080807">
 
-    <!-- Barra de acción -->
+    <!-- Se conserva la Toolbar que configura GameActivity.kt. -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/toolbar_blue"
+        android:background="#120E0B"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:titleTextColor="@color/white"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:titleTextColor="#F0B944"
+        app:popupTheme="@style/ThemeOverlay.Tragaperras.PopupDark" />
 
-    <!--
-        Modificación Pere 29/10.
-
-        Se añade un ScrollView para permitir desplazamiento vertical
-        cuando el contenido no cabe completamente en pantallas pequeñas,
-        especialmente al utilizar el móvil en orientación horizontal.
-
-        La Toolbar permanece fija y únicamente se desplaza el contenido
-        de la partida.
-    -->
+    <!-- ScrollView obligatorio: no perder compatibilidad con Small Phone. -->
     <ScrollView
         android:id="@+id/scrollGame"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:clipToPadding="false">
 
-        <!-- Contenido de la pantalla -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/tvBalance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Saldo: 250"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+            android:gravity="top|center_horizontal"
+            android:paddingStart="6dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="16dp">
 
             <!--
-                Los 3 rodillos y la palanca se colocan en una fila.
-                layout_weight reparte el ancho disponible para adaptarse
-                a distintos tamaños de pantalla.
+                La imagen principal determina la ALTURA según su proporción
+                original 941 x 1672. La capa ConstraintLayout se adapta a ella.
+                Así todas las posiciones crecen/reducen con la máquina.
             -->
-            <LinearLayout
+            <FrameLayout
+                android:id="@+id/machineArtworkStage"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
                 <ImageView
-                    android:id="@+id/ivReel1"
-                    android:layout_width="0dp"
-                    android:layout_height="100dp"
-                    android:layout_weight="1"
-                    android:contentDescription="Rodillo 1"
-                    android:src="@drawable/gas_mask" />
-
-                <ImageView
-                    android:id="@+id/ivReel2"
-                    android:layout_width="0dp"
-                    android:layout_height="100dp"
-                    android:layout_weight="1"
-                    android:contentDescription="Rodillo 2"
-                    android:src="@drawable/radioactive" />
-
-                <ImageView
-                    android:id="@+id/ivReel3"
-                    android:layout_width="0dp"
-                    android:layout_height="100dp"
-                    android:layout_weight="1"
-                    android:contentDescription="Rodillo 3"
-                    android:src="@drawable/skull" />
-
-                <ImageView
-                    android:id="@+id/ivLever"
-                    android:layout_width="0dp"
-                    android:layout_height="140dp"
-                    android:layout_weight="0.6"
-                    android:contentDescription="Palanca de la tragaperras"
-                    android:src="@drawable/lever" />
-
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="Elige tu apuesta" />
-
-            <RadioGroup
-                android:id="@+id/rgBets"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/rbBet10"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/ivMachineBody"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="10" />
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitXY"
+                    android:contentDescription="@null"
+                    android:src="@drawable/machine_shell_p2" />
 
-                <RadioButton
-                    android:id="@+id/rbBet25"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="25" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/machineOverlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                <RadioButton
-                    android:id="@+id/rbBet50"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="50" />
+                    <!-- Bordes de la zona de tres rodillos de la ilustración. -->
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideReelLeft"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.158" />
 
-            </RadioGroup>
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideReelRight"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.828" />
 
-            <Button
-                android:id="@+id/btnSpin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:text="Girar" />
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideReelTop"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintGuide_percent="0.326" />
 
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideReelBottom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintGuide_percent="0.591" />
+
+                    <!-- Cabecera REAL (texto translatable en P2 por Jaime). -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        app:layout_constraintWidth_default="percent"
+                        app:layout_constraintWidth_percent="0.77"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintVertical_bias="0.125">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="LOS"
+                            android:textColor="#FF9F3B"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="APKPOCALÍPTICOS"
+                            android:textColor="#B6FF39"
+                            android:textSize="21sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TRAGAPERRAS DEL YERMO"
+                            android:textColor="#E4CFA7"
+                            android:textSize="8sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Saldo: mantiene id, texto y color dinámicos del Kotlin. -->
+                    <TextView
+                        android:id="@+id/tvBalance"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Saldo: 250"
+                        android:textColor="#FFFFFF"
+                        android:textSize="21sp"
+                        android:textStyle="bold"
+                        app:layout_constraintWidth_default="percent"
+                        app:layout_constraintWidth_percent="0.49"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintVertical_bias="0.263" />
+
+                    <!--
+                        Rodillos animados reales: NO son imágenes estáticas.
+                        El dibujo crema de la carcasa queda por debajo.
+                    -->
+                    <LinearLayout
+                        android:id="@+id/reelArea"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:clipChildren="true"
+                        android:clipToPadding="true"
+                        app:layout_constraintStart_toStartOf="@id/guideReelLeft"
+                        app:layout_constraintEnd_toEndOf="@id/guideReelRight"
+                        app:layout_constraintTop_toTopOf="@id/guideReelTop"
+                        app:layout_constraintBottom_toBottomOf="@id/guideReelBottom">
+
+                        <com.example.tragaperras.ReelView
+                            android:id="@+id/ivReel1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginHorizontal="3dp" />
+
+                        <com.example.tragaperras.ReelView
+                            android:id="@+id/ivReel2"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginHorizontal="3dp" />
+
+                        <com.example.tragaperras.ReelView
+                            android:id="@+id/ivReel3"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginHorizontal="3dp" />
+                    </LinearLayout>
+
+                    <!-- Apuestas sobre los tres alojamientos ya dibujados. -->
+                    <RadioGroup
+                        android:id="@+id/rgBets"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        app:layout_constraintWidth_default="percent"
+                        app:layout_constraintWidth_percent="0.77"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintVertical_bias="0.677">
+
+                        <RadioButton
+                            android:id="@+id/rbBet10"
+                            android:layout_width="0dp"
+                            android:layout_height="42dp"
+                            android:layout_weight="1"
+                            android:layout_marginHorizontal="5dp"
+                            android:translationX="-3dp"
+                            android:background="@drawable/bet_mockup_selector_p2"
+                            android:button="@null"
+                            android:checked="true"
+                            android:gravity="center"
+                            android:text="10"
+                            android:textColor="#FFF0CD"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <RadioButton
+                            android:id="@+id/rbBet25"
+                            android:layout_width="0dp"
+                            android:layout_height="42dp"
+                            android:layout_weight="1"
+                            android:layout_marginHorizontal="5dp"
+                            android:background="@drawable/bet_mockup_selector_p2"
+                            android:button="@null"
+                            android:gravity="center"
+                            android:text="25"
+                            android:textColor="#FFF0CD"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <RadioButton
+                            android:id="@+id/rbBet50"
+                            android:layout_width="0dp"
+                            android:layout_height="42dp"
+                            android:layout_weight="1"
+                            android:layout_marginHorizontal="5dp"
+                            android:translationX="-5dp"
+                            android:background="@drawable/bet_mockup_selector_p2"
+                            android:button="@null"
+                            android:gravity="center"
+                            android:text="50"
+                            android:textColor="#FFF0CD"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </RadioGroup>
+
+                    <!--
+                        ÚNICO botón de giro: se superpone solo la superficie roja.
+                        La carcasa está dibujada en machine_shell_p2; evita el doble marco.
+                        NO se restaura la palanca ni el GIRAR inferior.
+                    -->
+                    <ImageView
+                        android:id="@+id/btnMachine"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:contentDescription="Botón rojo de giro"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/machine_button_face_p2"
+                        app:layout_constraintWidth_default="percent"
+                        app:layout_constraintWidth_percent="0.184"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintVertical_bias="0.822" />
+
+                    <!-- El mensaje queda como TextView (sin texto incrustado). -->
+                    <TextView
+                        android:id="@+id/tvMachineStatus"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="¡BUENA SUERTE!"
+                        android:textColor="#B6FF52"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintWidth_default="percent"
+                        app:layout_constraintWidth_percent="0.62"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintVertical_bias="0.927" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </FrameLayout>
         </LinearLayout>
-
     </ScrollView>
-
 </LinearLayout>

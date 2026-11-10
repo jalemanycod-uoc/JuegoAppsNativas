@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="apoc_bg">#11130F</color>
+    <color name="apoc_panel">#242820</color>
+    <color name="apoc_panel_dark">#171A15</color>
+    <color name="apoc_hazard">#D7B72B</color>
+    <color name="apoc_hazard_pressed">#A98E1F</color>
+    <color name="apoc_text">#F1EBD8</color>
+    <color name="apoc_text_muted">#B8B39F</color>
+    <color name="apoc_black">#0A0B09</color>
+</resources>

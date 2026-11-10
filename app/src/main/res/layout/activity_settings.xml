@@ -1,82 +1,254 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="#060705">
 
-    <!-- Barra de acción -->
-    <com.google.android.material.appbar.MaterialToolbar
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/toolbar_blue"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:titleTextColor="@color/white"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-    <!-- Contenido de la pantalla -->
-    <LinearLayout
+    <!-- Scroll mantiene accesibles todos los controles en móviles pequeños. -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:fillViewport="true"
+        android:scrollbarStyle="outsideOverlay">
 
-        <Switch
-            android:id="@+id/swMusic"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Música"
-            android:textSize="18sp" />
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:focusableInTouchMode="true"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="24dp">
 
-        <Switch
-            android:id="@+id/swSoundEffects"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:checked="true"
-            android:text="Efectos de sonido"
-            android:textSize="18sp" />
+            <!-- MISMO ENCABEZADO que Historial: ilustración sin texto fijo. -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="145dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/home_logo_plate_p2"
+                    android:contentDescription="@null" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center_horizontal"
+                    android:layout_marginTop="74dp"
+                    android:gravity="center"
+                    android:text="@string/settings_title_p2"
+                    android:textStyle="bold"
+                    android:textSize="27sp"
+                    android:textColor="#C0FF55"
+                    android:shadowColor="#A86EFF33"
+                    android:shadowRadius="5" />
+            </FrameLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Idioma"
-            android:textSize="18sp" />
-
-        <RadioGroup
-            android:id="@+id/rgLanguage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <RadioButton
-                android:id="@+id/rbSpanish"
-                android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="Español" />
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="9dp"
+                android:gravity="center"
+                android:text="@string/settings_subtitle_p2"
+                android:textColor="#DFC68C"
+                android:textStyle="bold"
+                android:textSize="13sp" />
 
-            <RadioButton
-                android:id="@+id/rbCatalan"
-                android:layout_width="wrap_content"
+            <!-- MÚSICA: visual. Se conserva el ID de P1 para la integración de Cristian. -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="83dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/home_scores_header_v2"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|start"
+                    android:layout_marginStart="52dp"
+                    android:layout_marginEnd="114dp"
+                    android:text="@string/settings_music_p2"
+                    android:textColor="#F4EAD1"
+                    android:textStyle="bold"
+                    android:textSize="17sp" />
+
+                <Switch
+                    android:id="@+id/swMusic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="45dp"
+                    android:checked="true"
+                    android:showText="false"
+                    android:thumbTint="@color/settings_thumb_tint_p2"
+                    android:trackTint="@color/settings_track_tint_p2"
+                    android:contentDescription="@string/settings_music_p2"
+                    android:minWidth="52dp" />
+            </FrameLayout>
+
+            <!-- EFECTOS: mismo ID que el anterior SettingsActivity. -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="83dp"
+                android:layout_marginTop="9dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/home_scores_header_v2"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|start"
+                    android:layout_marginStart="52dp"
+                    android:layout_marginEnd="114dp"
+                    android:text="@string/settings_effects_p2"
+                    android:textColor="#F4EAD1"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:gravity="center_vertical"
+                    android:maxLines="2" />
+
+                <Switch
+                    android:id="@+id/swSoundEffects"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="45dp"
+                    android:checked="true"
+                    android:showText="false"
+                    android:thumbTint="@color/settings_thumb_tint_p2"
+                    android:trackTint="@color/settings_track_tint_p2"
+                    android:contentDescription="@string/settings_effects_p2"
+                    android:minWidth="52dp" />
+            </FrameLayout>
+
+            <!-- IDIOMA: se dejan RadioGroup y tres IDs originales, para Jaime. -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Català" />
+                android:layout_marginTop="14dp"
+                android:background="@drawable/settings_language_panel_p2"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingStart="11dp"
+                android:paddingEnd="11dp"
+                android:paddingTop="9dp"
+                android:paddingBottom="14dp">
 
-            <RadioButton
-                android:id="@+id/rbEnglish"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="English" />
-        </RadioGroup>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/home_scores_header_v2"
+                        android:contentDescription="@null" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/settings_language_p2"
+                        android:textColor="#C0FF55"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
 
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Atrás" />
-    </LinearLayout>
-</LinearLayout>
+                <RadioGroup
+                    android:id="@+id/rgLanguage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rbSpanish"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_marginHorizontal="4dp"
+                        android:background="@drawable/settings_radio_selector_p2"
+                        android:button="@null"
+                        android:checked="true"
+                        android:gravity="center"
+                        android:text="@string/settings_spanish_p2"
+                        android:textColor="@color/settings_radio_text_p2"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/rbCatalan"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_marginHorizontal="4dp"
+                        android:background="@drawable/settings_radio_selector_p2"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:text="@string/settings_catalan_p2"
+                        android:textColor="@color/settings_radio_text_p2"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/rbEnglish"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_marginHorizontal="4dp"
+                        android:background="@drawable/settings_radio_selector_p2"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:text="@string/settings_english_p2"
+                        android:textColor="@color/settings_radio_text_p2"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <!-- Button real, no FrameLayout: SettingsActivity P1 lo busca como Button. -->
+            <Button
+                android:id="@+id/btnBack"
+                android:layout_width="260dp"
+                android:layout_height="58dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/settings_back_button_p2"
+                android:backgroundTint="@null"
+                app:backgroundTint="@null"
+                android:gravity="center"
+                android:text="@string/settings_back_p2"
+                android:textAllCaps="true"
+                android:textColor="#F5F0D9"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="top|end"
+        android:background="@android:color/transparent"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title=""
+        app:titleTextColor="#F9E5B7"
+        app:popupTheme="@style/ThemeOverlay.Tragaperras.PopupDark" />
+</FrameLayout>
