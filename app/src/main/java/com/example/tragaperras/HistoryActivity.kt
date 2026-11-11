@@ -41,7 +41,9 @@ class HistoryActivity : AppCompatActivity() {
             insets
         }
 
-        setSupportActionBar(findViewById(R.id.toolbar))
+        val yermoToolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        setSupportActionBar(yermoToolbar)
+        YermoOverflowMenu.install(this, yermoToolbar, R.id.menu_history)
         supportActionBar?.title = ""
 
         repository = GameRepository(this)
@@ -137,10 +139,8 @@ class HistoryActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
+    // El menú blanco de AppCompat queda desactivado: lo sustituye YermoOverflowMenu.
+    override fun onCreateOptionsMenu(menu: Menu): Boolean = false
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.menu_home -> {

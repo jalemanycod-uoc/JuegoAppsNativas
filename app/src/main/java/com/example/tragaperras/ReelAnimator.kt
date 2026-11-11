@@ -8,7 +8,7 @@ package com.example.tragaperras
  * - rodillo 2 después;
  * - rodillo 3 el último.
  *
- * Ahora cada ReelView realiza desplazamiento vertical real
+ * Cada ReelView realiza desplazamiento vertical real
  * y desacelera progresivamente.
  */
 class ReelAnimator {

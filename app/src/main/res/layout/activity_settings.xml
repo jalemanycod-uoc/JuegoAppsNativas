@@ -160,9 +160,12 @@
                         android:contentDescription="@null" />
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:gravity="center"
+                        android:textAlignment="center"
+                        android:includeFontPadding="false"
+                        android:translationY="-3dp"
                         android:text="@string/settings_language_p2"
                         android:textColor="#C0FF55"
                         android:textSize="18sp"

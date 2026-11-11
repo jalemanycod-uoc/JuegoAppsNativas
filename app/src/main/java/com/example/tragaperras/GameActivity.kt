@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
@@ -40,6 +41,8 @@ class GameActivity : AppCompatActivity() {
     private lateinit var ivReel3: ReelView
     private lateinit var btnMachine: ImageView
 
+    private var resultScrim: View? = null
+
     // Blanco en reposo; rojo al gastar/perder; verde al ganar saldo neto.
     private val balanceNeutralColor = Color.parseColor("#FFFFFF")
     private val balanceNegativeColor = Color.parseColor("#E55252")
@@ -62,7 +65,9 @@ class GameActivity : AppCompatActivity() {
             insets
         }
 
-        setSupportActionBar(findViewById(R.id.toolbar))
+        val yermoToolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        setSupportActionBar(yermoToolbar)
+        YermoOverflowMenu.install(this, yermoToolbar, R.id.menu_play)
 
         val nameFromWelcome = intent.getStringExtra("playerName")
         if (!nameFromWelcome.isNullOrBlank()) {
@@ -260,14 +265,7 @@ class GameActivity : AppCompatActivity() {
 
         dialog.setCancelable(false)
 
-        // NUEVO: oscurece el fondo un 82% y permite ver solo el diálogo destacado.
-        dialog.setOnShowListener {
-            dialog.window?.apply {
-                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-                setDimAmount(0.82f)
-            }
-        }
+        configureResultDialog(dialog)
 
         btnPrimary.setOnClickListener {
             dialog.dismiss()
@@ -318,14 +316,7 @@ class GameActivity : AppCompatActivity() {
 
         dialog.setCancelable(false)
 
-        // NUEVO: el fondo se oscurece también al terminar la partida.
-        dialog.setOnShowListener {
-            dialog.window?.apply {
-                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-                setDimAmount(0.82f)
-            }
-        }
+        configureResultDialog(dialog)
 
         btnPrimary.setOnClickListener {
             balance = GameRules.INITIAL_BALANCE
@@ -354,6 +345,51 @@ class GameActivity : AppCompatActivity() {
         dialog.show()
     }
 
+
+    /**
+     * Un fondo negro real, añadido al contenido del juego, garantiza que
+     * se vea oscurecido incluso cuando un tema del sistema ignora el dim del diálogo.
+     * El diálogo vive en otra Window, por lo que siempre se dibuja por encima.
+     */
+    private fun showResultScrim() {
+        if (resultScrim != null) return
+        val content = findViewById<ViewGroup>(android.R.id.content)
+        val scrim = View(this).apply {
+            setBackgroundColor(Color.parseColor("#D9000000"))
+            isClickable = true
+            isFocusable = true
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }
+        content.addView(
+            scrim,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+        resultScrim = scrim
+    }
+
+    private fun clearResultScrim() {
+        val scrim = resultScrim ?: return
+        (scrim.parent as? ViewGroup)?.removeView(scrim)
+        resultScrim = null
+    }
+
+    private fun configureResultDialog(dialog: AlertDialog) {
+        dialog.setOnShowListener {
+            showResultScrim()
+            dialog.window?.apply {
+                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                val params = attributes
+                params.dimAmount = 0.40f
+                attributes = params
+            }
+        }
+        dialog.setOnDismissListener { clearResultScrim() }
+    }
+
     private fun updateBalanceNeutral() {
         updateBalanceDisplay(balance, balanceNeutralColor)
     }
@@ -373,15 +409,14 @@ class GameActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        clearResultScrim()
         super.onDestroy()
         reelAnimator.reset()
         disposables.clear()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
+    // El menú blanco de AppCompat queda desactivado: lo sustituye YermoOverflowMenu.
+    override fun onCreateOptionsMenu(menu: Menu): Boolean = false
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
