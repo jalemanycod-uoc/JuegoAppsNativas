@@ -19,6 +19,13 @@ class GameRepository(context: Context) {
             .observeOn(AndroidSchedulers.mainThread())  // el aviso de "terminado" llega a la pantalla
     }
 
+    // Guarda tirada y saldo conjuntamente para evitar inconsistencias.
+    fun saveSpin(result: GameResult): Completable {
+        return Completable.fromAction { db.saveSpinAtomically(result) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
     // Devuelve todas las partidas
     fun getHistory(): Single<List<GameResult>> {
         return Single.fromCallable { db.queryHistory() }

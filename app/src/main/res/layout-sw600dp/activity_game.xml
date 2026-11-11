@@ -16,7 +16,7 @@
         android:background="#151713"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:titleTextColor="#D0AD27"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
+ />
 
     <ScrollView
         android:id="@+id/scrollGame"

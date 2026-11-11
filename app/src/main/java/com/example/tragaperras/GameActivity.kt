@@ -81,6 +81,8 @@ class GameActivity : AppCompatActivity() {
         ivReel2 = findViewById(R.id.ivReel2)
         ivReel3 = findViewById(R.id.ivReel3)
         btnMachine = findViewById(R.id.btnMachine)
+        // No dejar apostar antes de recuperar el saldo real de SQLite.
+        btnMachine.isEnabled = false
         val rgBets = findViewById<RadioGroup>(R.id.rgBets)
 
         updateBalanceNeutral()
@@ -93,6 +95,8 @@ class GameActivity : AppCompatActivity() {
                     updateBalanceNeutral()
                     if (balance < GameRules.VALID_BETS.min()) {
                         showGameOverDialog()
+                    } else {
+                        btnMachine.isEnabled = true
                     }
                 },
                 {
@@ -150,18 +154,12 @@ class GameActivity : AppCompatActivity() {
 
     private fun saveResult(result: GameResult) {
         disposables.add(
-            repository.saveGame(result).subscribe(
+            repository.saveSpin(result).subscribe(
                 { },
                 {
-                    Toast.makeText(this, "Error al guardar la partida", Toast.LENGTH_SHORT).show()
-                }
-            )
-        )
-        disposables.add(
-            repository.saveBalance(result.balanceAfter).subscribe(
-                { },
-                {
-                    Toast.makeText(this, "Error al guardar el saldo", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this, "Error al guardar la tirada y el saldo", Toast.LENGTH_LONG
+                    ).show()
                 }
             )
         )
@@ -319,18 +317,22 @@ class GameActivity : AppCompatActivity() {
         configureResultDialog(dialog)
 
         btnPrimary.setOnClickListener {
-            balance = GameRules.INITIAL_BALANCE
-            updateBalanceNeutral()
-
+            btnPrimary.isEnabled = false
+            // startNewGame actualiza tanto saldo como número de partida en SQLite.
             disposables.add(
-                repository.resetBalance().subscribe({ }, { })
+                repository.startNewGame().subscribe(
+                    {
+                        balance = GameRules.INITIAL_BALANCE
+                        updateBalanceNeutral()
+                        dialog.dismiss()
+                        btnMachine.isEnabled = true
+                    },
+                    {
+                        btnPrimary.isEnabled = true
+                        Toast.makeText(this, "Error al reiniciar la partida", Toast.LENGTH_LONG).show()
+                    }
+                )
             )
-            disposables.add(
-                repository.startNewGame().subscribe({ }, { })
-            )
-
-            dialog.dismiss()
-            btnMachine.isEnabled = true
         }
 
         btnSecondary.setOnClickListener {
@@ -420,9 +422,17 @@ class GameActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_home -> startActivity(Intent(this, MainActivity::class.java))
-            R.id.menu_history -> startActivity(Intent(this, HistoryActivity::class.java))
-            R.id.menu_settings -> startActivity(Intent(this, SettingsActivity::class.java))
+            R.id.menu_home -> startActivity(Intent(this, MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            })
+            R.id.menu_history -> startActivity(Intent(this, HistoryActivity::class.java).apply {
+                putExtra("fromGame", true)
+                putExtra("playerName", playerName)
+            })
+            R.id.menu_settings -> startActivity(Intent(this, SettingsActivity::class.java).apply {
+                putExtra("fromGame", true)
+                putExtra("playerName", playerName)
+            })
             R.id.menu_exit -> finishAffinity()
         }
         return true

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="settings_title_p2">AJUSTES</string>
     <string name="settings_subtitle_p2">CONFIGURACIÓN DEL YERMO</string>
@@ -9,5 +9,4 @@
     <string name="settings_catalan_p2">Català</string>
     <string name="settings_english_p2">English</string>
     <string name="settings_back_p2">VOLVER</string>
-    <string name="settings_note_p2">Los controles de audio e idioma se conectarán con sus respectivas funciones.</string>
-</resources>
+    </resources>

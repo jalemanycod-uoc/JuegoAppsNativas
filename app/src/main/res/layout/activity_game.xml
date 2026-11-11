@@ -16,7 +16,7 @@
         android:background="#120E0B"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:titleTextColor="#F0B944"
-        app:popupTheme="@style/ThemeOverlay.Tragaperras.PopupDark" />
+ />
 
     <!-- ScrollView obligatorio: no perder compatibilidad con Small Phone. -->
     <ScrollView

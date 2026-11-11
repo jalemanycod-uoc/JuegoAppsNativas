@@ -235,5 +235,5 @@
         android:background="@android:color/transparent"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:titleTextColor="#F9E5B7"
-        app:popupTheme="@style/ThemeOverlay.Tragaperras.PopupDark" />
+ />
 </FrameLayout>

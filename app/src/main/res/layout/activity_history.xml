@@ -153,5 +153,5 @@
         android:layout_gravity="top|end"
         android:background="@android:color/transparent"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.Tragaperras.PopupDark" />
+ />
 </FrameLayout>

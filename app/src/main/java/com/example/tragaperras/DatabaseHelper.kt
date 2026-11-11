@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.database.sqlite.SQLiteException
 
 // Crea y gestiona la base de datos SQLite de la app
 class DatabaseHelper(context: Context) :
@@ -73,19 +74,48 @@ class DatabaseHelper(context: Context) :
         return writableDatabase.insert("game_results", null, values)
     }
 
+    /**
+     * Guarda una tirada y su saldo final en la MISMA transacción SQLite.
+     * Si falla cualquiera de las dos operaciones, ninguna queda aplicada.
+     * Mantiene insertGame()/updateBalance() para compatibilidad con el código previo.
+     */
+    fun saveSpinAtomically(result: GameResult) {
+        val db = writableDatabase
+        db.beginTransaction()
+        try {
+            val insertedId = insertGame(result)
+            if (insertedId == -1L) {
+                throw SQLiteException("No se pudo guardar la tirada")
+            }
+            val values = ContentValues().apply { put("balance", result.balanceAfter) }
+            val updated = db.update("player_state", values, "id = 1", null)
+            if (updated != 1) {
+                throw SQLiteException("No se pudo actualizar el saldo")
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+    }
+
     // Todas las tiradas, de la más nueva a la más antigua
     fun queryHistory(): List<GameResult> {
         return readGames("SELECT * FROM game_results ORDER BY timestamp DESC LIMIT 250")
     }
 
-    // Las 5 mejores partidas (la tirada con más saldo de cada partida)
+    // Las 5 mejores partidas: una tirada por partida y desempate determinista.
     fun queryBestResults(): List<GameResult> {
         return readGames(
             """
-            SELECT *, MAX(balance_after)
-            FROM game_results
-            GROUP BY game_number
-            ORDER BY balance_after DESC
+            SELECT g.*
+            FROM game_results AS g
+            WHERE g.id = (
+                SELECT g2.id FROM game_results AS g2
+                WHERE g2.game_number = g.game_number
+                ORDER BY g2.balance_after DESC, g2.timestamp DESC, g2.id DESC
+                LIMIT 1
+            )
+            ORDER BY g.balance_after DESC, g.timestamp DESC, g.id DESC
             LIMIT 5
             """
         )

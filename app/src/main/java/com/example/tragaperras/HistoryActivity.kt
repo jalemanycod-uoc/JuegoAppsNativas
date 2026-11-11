@@ -29,6 +29,8 @@ class HistoryActivity : AppCompatActivity() {
     private lateinit var repository: GameRepository
     private val disposables = CompositeDisposable()
     private val fromHome by lazy { intent.getBooleanExtra("fromHome", false) }
+    private val fromGame by lazy { intent.getBooleanExtra("fromGame", false) }
+    private val playerName by lazy { intent.getStringExtra("playerName") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,9 +54,7 @@ class HistoryActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.btnBack).setOnClickListener { finish() }
         findViewById<View>(R.id.btnBackToGame).setOnClickListener {
-            // Cierra la pantalla: vuelve al juego que ya estaba abierto,
-            // sin crear otro GameActivity ni sustituir el nombre del jugador.
-            finish()
+            openExistingGameOrHome()
         }
 
         if (fromHome) {
@@ -139,7 +139,21 @@ class HistoryActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    // El menú blanco de AppCompat queda desactivado: lo sustituye YermoOverflowMenu.
+    private fun openExistingGameOrHome() {
+        if (fromGame && !playerName.isNullOrBlank()) {
+            startActivity(Intent(this, GameActivity::class.java).apply {
+                putExtra("playerName", playerName)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            })
+        } else {
+            // Desde Inicio no hay partida activa: evitar jugador genérico.
+            startActivity(Intent(this, MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            })
+        }
+        finish()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean = false
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
@@ -151,13 +165,15 @@ class HistoryActivity : AppCompatActivity() {
             true
         }
         R.id.menu_play -> {
-            // Conserva la solución de P1: no crear una nueva partida sin nombre.
-            finish()
+            openExistingGameOrHome()
             true
         }
         R.id.menu_history -> true
         R.id.menu_settings -> {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            startActivity(Intent(this, SettingsActivity::class.java).apply {
+                putExtra("fromGame", fromGame)
+                putExtra("playerName", playerName)
+            })
             true
         }
         R.id.menu_exit -> {

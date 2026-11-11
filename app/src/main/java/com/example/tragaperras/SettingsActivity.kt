@@ -36,18 +36,50 @@ class SettingsActivity : AppCompatActivity() {
         btnBack.setOnClickListener { finish() }
     }
 
-    // Crea el menú de la barra de acción
-    // El menú blanco de AppCompat queda desactivado: lo sustituye YermoOverflowMenu.
+    // El menú propio reutiliza los mismos IDs y delega en este método.
     override fun onCreateOptionsMenu(menu: Menu): Boolean = false
 
-    // Qué hace cada opción del menú
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_home -> startActivity(Intent(this, MainActivity::class.java))
-            R.id.menu_play -> startActivity(Intent(this, GameActivity::class.java))
-            R.id.menu_history -> startActivity(Intent(this, HistoryActivity::class.java))
-            R.id.menu_exit -> finishAffinity()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.menu_home -> {
+            openHome()
+            true
         }
-        return true
+        R.id.menu_play -> {
+            openExistingGameOrHome()
+            true
+        }
+        R.id.menu_history -> {
+            startActivity(Intent(this, HistoryActivity::class.java).apply {
+                val fromGame = this@SettingsActivity.intent.getBooleanExtra("fromGame", false)
+                putExtra("fromGame", fromGame)
+                putExtra("fromHome", !fromGame)
+                putExtra("playerName", this@SettingsActivity.intent.getStringExtra("playerName"))
+            })
+            true
+        }
+        R.id.menu_exit -> { finishAffinity(); true }
+        else -> super.onOptionsItemSelected(item)
+    }
+
+    private fun openHome() {
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        })
+        finish()
+    }
+
+    private fun openExistingGameOrHome() {
+        val fromGame = intent.getBooleanExtra("fromGame", false)
+        val name = intent.getStringExtra("playerName")
+        if (fromGame && !name.isNullOrBlank()) {
+            startActivity(Intent(this, GameActivity::class.java).apply {
+                putExtra("playerName", name)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            })
+            finish()
+        } else {
+            // Si no había una partida abierta, pide nombre en Inicio.
+            openHome()
+        }
     }
 }
