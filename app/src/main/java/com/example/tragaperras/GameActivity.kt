@@ -137,6 +137,8 @@ class GameActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         SoundManager.screenStopped()
+        // Si se sale mientras giran los rodillos, que no se quede sonando
+        SoundManager.stopSpin()
     }
 
     fun onBetSelected(bet: Int) {
@@ -151,6 +153,8 @@ class GameActivity : AppCompatActivity() {
         }
 
         btnMachine.isEnabled = false
+        // Empieza el sonido de los rodillos girando
+        SoundManager.playSpin(this)
 
         // Previsualización: se descuenta visualmente la apuesta, sin cambiar
         // el saldo real hasta que se obtiene el resultado de SlotMachineEngine.
@@ -162,6 +166,8 @@ class GameActivity : AppCompatActivity() {
         reelAnimator.animateReel(ivReel1, result.reel1, 1400L) { }
         reelAnimator.animateReel(ivReel2, result.reel2, 1900L) { }
         reelAnimator.animateReel(ivReel3, result.reel3, 2500L) {
+            // El último rodillo se ha parado: se para el sonido de giro
+            SoundManager.stopSpin()
             // Dejamos 750 ms para observar los símbolos finales.
             reelArea.postDelayed({
                 renderResult(result)
