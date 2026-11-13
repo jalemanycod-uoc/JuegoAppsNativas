@@ -73,6 +73,14 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         loadBestScores()
+        // música del menú
+        SoundManager.playMusic(this, R.raw.musica_menu)
+    }
+
+    // Al salir de la pantalla o de la app hay que pausar la música
+    override fun onPause() {
+        super.onPause()
+        SoundManager.pauseMusic()
     }
 
     fun openGame() {
