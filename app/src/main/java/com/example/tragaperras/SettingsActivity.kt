@@ -50,7 +50,7 @@ class SettingsActivity : AppCompatActivity() {
             super.onStop()
             SoundManager.screenStopped()
         }
-    
+
 
     // El menú propio reutiliza los mismos IDs y delega en este método.
     override fun onCreateOptionsMenu(menu: Menu): Boolean = false

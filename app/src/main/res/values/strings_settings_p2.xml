@@ -9,4 +9,6 @@
     <string name="settings_catalan_p2">Català</string>
     <string name="settings_english_p2">English</string>
     <string name="settings_back_p2">VOLVER</string>
+    <string name="settings_choose_music_p2">Elegir música</string>
+    <string name="settings_official_music_p2">Música oficial</string>
     </resources>
