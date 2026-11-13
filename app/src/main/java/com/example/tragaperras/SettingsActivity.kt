@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.Switch
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -34,6 +35,27 @@ class SettingsActivity : AppCompatActivity() {
         // Atrás: cierra esta pantalla y vuelve a la anterior
         val btnBack = findViewById<Button>(R.id.btnBack)
         btnBack.setOnClickListener { finish() }
+
+        // Interruptor de Música
+        val swMusic = findViewById<Switch>(R.id.swMusic)
+        // Lo dejamos como estaba guardado (activado o desactivado)
+        swMusic.isChecked = SoundManager.isMusicOn(this)
+        // Cuando el jugador lo cambia
+        swMusic.setOnCheckedChangeListener { _, isChecked ->
+            SoundManager.setMusicOn(this, isChecked)
+            if (isChecked) {
+                SoundManager.playMusic(this, R.raw.musica_menu)
+            } else {
+                SoundManager.pauseMusic()
+            }
+        }
+
+        // Interruptor de Efectos de sonido
+        val swSoundEffects = findViewById<Switch>(R.id.swSoundEffects)
+        swSoundEffects.isChecked = SoundManager.isEffectsOn(this)
+        swSoundEffects.setOnCheckedChangeListener { _, isChecked ->
+            SoundManager.setEffectsOn(this, isChecked)
+        }
     }
         override fun onResume() {
             super.onResume()

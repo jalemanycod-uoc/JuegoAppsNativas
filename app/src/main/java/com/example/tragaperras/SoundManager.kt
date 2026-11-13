@@ -69,7 +69,7 @@ object SoundManager {
     fun playMusic(context: Context, musicId: Int) {
         // Si la música está desactivada en Opciones, no suena nada
         if (!isMusicOn(context)) {
-            stopMusic()
+            pauseMusic()
             return
         }
 
