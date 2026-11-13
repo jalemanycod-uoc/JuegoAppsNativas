@@ -203,6 +203,7 @@ class GameActivity : AppCompatActivity() {
 
         when (result.outcome) {
             Outcome.JACKPOT -> {
+                SoundManager.playEffect(this, R.raw.jackpot)
                 UiAnimations.jackpotPulse(ivReel1)
                 UiAnimations.jackpotPulse(ivReel2)
                 UiAnimations.jackpotPulse(ivReel3)
@@ -210,6 +211,7 @@ class GameActivity : AppCompatActivity() {
             }
 
             Outcome.WIN -> {
+                SoundManager.playEffect(this, R.raw.monedas)
                 animateWinningReels(result)
                 reelArea.postDelayed({ showResultDialog(result) }, 400L)
             }
@@ -217,8 +219,12 @@ class GameActivity : AppCompatActivity() {
             Outcome.LOSS -> {
                 UiAnimations.shake(tvBalance)
                 if (balance < GameRules.VALID_BETS.min()) {
+                    // Se ha quedado sin fichas (sonido de perder la partida)
+                    SoundManager.playEffect(this, R.raw.perder_partida)
                     reelArea.postDelayed({ showGameOverDialog(result) }, 350L)
                 } else {
+                    // Sin premio (sonido de perder)
+                    SoundManager.playEffect(this, R.raw.perder)
                     reelArea.postDelayed({ showResultDialog(result) }, 350L)
                 }
             }
@@ -290,6 +296,7 @@ class GameActivity : AppCompatActivity() {
         configureResultDialog(dialog)
 
         btnPrimary.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             dialog.dismiss()
             updateBalanceNeutral()
             btnMachine.isEnabled = true
@@ -341,6 +348,7 @@ class GameActivity : AppCompatActivity() {
         configureResultDialog(dialog)
 
         btnPrimary.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             btnPrimary.isEnabled = false
             // startNewGame actualiza tanto saldo como número de partida en SQLite.
             disposables.add(
@@ -360,6 +368,7 @@ class GameActivity : AppCompatActivity() {
         }
 
         btnSecondary.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             dialog.dismiss()
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
