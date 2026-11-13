@@ -16,6 +16,23 @@ object SoundManager {
     // Reproductor del sonido de giro. Lo guardo para poder pararlo. Sino no deja.
     private var spinPlayer: MediaPlayer? = null
 
+    // Pantallas de la app que se están viendo
+    private var visibleScreens = 0
+
+    // Cuando empeiza a verse lo llama a onStart
+    fun screenStarted() {
+        visibleScreens = visibleScreens + 1
+    }
+
+    // Cuando deja de verse, llama a onStop
+    fun screenStopped() {
+        visibleScreens = visibleScreens - 1
+        // Cuando el jugador sale
+        if (visibleScreens == 0) {
+            pauseMusic()
+        }
+    }
+
     // Ajustes: se guardan con SharedPreferences, así no se pierden al cerrar la app
 
     private const val PREFS_NAME = "ajustes"

@@ -77,10 +77,16 @@ class MainActivity : AppCompatActivity() {
         SoundManager.playMusic(this, R.raw.musica_menu)
     }
 
-    // Al salir de la pantalla o de la app hay que pausar la música
-    override fun onPause() {
-        super.onPause()
-        SoundManager.pauseMusic()
+    // Avisamos a SoundManager que esta pantalla empieza a verse
+    override fun onStart() {
+        super.onStart()
+        SoundManager.screenStarted()
+    }
+
+    // Avisamos a SoundManager que esta pantalla deja de verse
+    override fun onStop() {
+        super.onStop()
+        SoundManager.screenStopped()
     }
 
     fun openGame() {
