@@ -6,6 +6,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.Switch
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -14,6 +16,20 @@ import androidx.core.view.WindowInsetsCompat
 // Pantalla de opciones. De momento solo es la interfaz:
 // la música, los efectos de sonido y el idioma se programan en otros productos
 class SettingsActivity : AppCompatActivity() {
+
+    // Abre la lista de archivos de audio del móvil para que el jugador elija una canción.
+    // Lo que hay entre llaves se ejecuta cuando el jugador ha elegido
+    private val chooseMusicLauncher =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            // uri es la dirección de la canción elegida (IMPORTANTE). Si el jugador cancela, es null
+            if (uri != null) {
+                // Se pide permiso para poder seguir usando la canción después de cerrar la app
+                contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                SoundManager.setCustomMusic(this, uri.toString())
+                SoundManager.restartMusic(this, R.raw.musica_menu)
+                Toast.makeText(this, "Música cambiada", Toast.LENGTH_SHORT).show()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +71,22 @@ class SettingsActivity : AppCompatActivity() {
         swSoundEffects.isChecked = SoundManager.isEffectsOn(this)
         swSoundEffects.setOnCheckedChangeListener { _, isChecked ->
             SoundManager.setEffectsOn(this, isChecked)
+        }
+
+        // Botón Elegir música
+        val btnChooseMusic = findViewById<Button>(R.id.btnChooseMusic)
+        btnChooseMusic.setOnClickListener {
+            // Abre la lista de archivos, y muestra únicamente los de audio
+            chooseMusicLauncher.launch(arrayOf("audio/*"))
+        }
+
+        // Botón Música oficial
+        val btnOfficialMusic = findViewById<Button>(R.id.btnOfficialMusic)
+        btnOfficialMusic.setOnClickListener {
+            // Se borra la canción elegida y luego volvemos a poner la música del juego
+            SoundManager.setCustomMusic(this, null)
+            SoundManager.restartMusic(this, R.raw.musica_menu)
+            Toast.makeText(this, "Música oficial", Toast.LENGTH_SHORT).show()
         }
     }
         override fun onResume() {
