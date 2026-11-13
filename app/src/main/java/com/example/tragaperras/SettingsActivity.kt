@@ -35,6 +35,22 @@ class SettingsActivity : AppCompatActivity() {
         val btnBack = findViewById<Button>(R.id.btnBack)
         btnBack.setOnClickListener { finish() }
     }
+        override fun onResume() {
+            super.onResume()
+            // Música del menú. Si ya sonaba continua sin empezar de cero
+            SoundManager.playMusic(this, R.raw.musica_menu)
+        }
+        // Se avisa a soundmanager que la pantalla empieza a verse
+        override fun onStart() {
+            super.onStart()
+            SoundManager.screenStarted()
+        }
+        // Se avisa a soundmanager que la pantalla deja de verse
+        override fun onStop() {
+            super.onStop()
+            SoundManager.screenStopped()
+        }
+    
 
     // El menú propio reutiliza los mismos IDs y delega en este método.
     override fun onCreateOptionsMenu(menu: Menu): Boolean = false
