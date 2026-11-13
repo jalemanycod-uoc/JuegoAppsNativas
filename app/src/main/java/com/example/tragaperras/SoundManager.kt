@@ -2,6 +2,7 @@ package com.example.tragaperras
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.net.Uri
 
 // Se encarga de toda la música y los efectos de sonido del juego.
 
@@ -63,6 +64,27 @@ object SoundManager {
         prefs.edit().putBoolean(KEY_EFFECTS_ON, effectsOn).apply()
     }
 
+    // Clave que guarda la canción elegida por el jugador
+    private const val KEY_CUSTOM_MUSIC = "musica_elegida"
+
+    // Devuelve la dirección de la canción elegida, o null si se usa la música oficial
+    fun getCustomMusic(context: Context): String? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getString(KEY_CUSTOM_MUSIC, null)
+    }
+
+    // Guarda la canción elegida. Si recibe null, se vuelve a la música oficial
+    fun setCustomMusic(context: Context, musicAddress: String?) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putString(KEY_CUSTOM_MUSIC, musicAddress).apply()
+    }
+
+    // Para la música y la vuelve a poner (al cambiar de canción)
+    fun restartMusic(context: Context, musicId: Int) {
+        stopMusic()
+        playMusic(context, musicId)
+    }
+
     // Música de fondo
 
     // Pone a sonar una música en bucle
@@ -73,23 +95,45 @@ object SoundManager {
             return
         }
 
-        // Si ya está puesta esta misma música, solo la reanudamos si estaba en pausa
+        // Si el jugador ha elegido una canción del móvil, suena esa en lugar de la oficial.
+        // La marco con el número -1 para saber que es la canción elegida
+        val customMusic = getCustomMusic(context)
+        var musicToPlay = musicId
+        if (customMusic != null) {
+            musicToPlay = -1
+        }
+
+        // Si ya está puesta esta misma música, solo se reanuda si estaba en pausa
         val player = musicPlayer
-        if (player != null && currentMusic == musicId) {
+        if (player != null && currentMusic == musicToPlay) {
             if (!player.isPlaying) {
                 player.start()
             }
             return
         }
 
-        // Si era otra música, la paramos y ponemos la nueva
+        // Si era otra música, se para y se pone la nueva
         stopMusic()
-        val newPlayer = MediaPlayer.create(context.applicationContext, musicId)
+        var newPlayer: MediaPlayer?
+        if (customMusic != null) {
+            newPlayer = MediaPlayer.create(context.applicationContext, Uri.parse(customMusic))
+        } else {
+            newPlayer = MediaPlayer.create(context.applicationContext, musicId)
+        }
+
+        // Si la canción elegida ya no se puede abrir (por ejemplo, se ha borrado del móvil),
+        // se vuelve a la música oficial
+        if (newPlayer == null && customMusic != null) {
+            setCustomMusic(context, null)
+            newPlayer = MediaPlayer.create(context.applicationContext, musicId)
+            musicToPlay = musicId
+        }
+
         if (newPlayer != null) {
             newPlayer.isLooping = true   // que se repita sin parar
             newPlayer.start()
             musicPlayer = newPlayer
-            currentMusic = musicId
+            currentMusic = musicToPlay
         }
     }
 
