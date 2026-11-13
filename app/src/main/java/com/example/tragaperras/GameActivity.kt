@@ -121,6 +121,24 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Música de la partida ( es otra diferente a la del menú)
+        SoundManager.playMusic(this, R.raw.musica_partida)
+    }
+
+    // Se avisa a SoundManager que esta pantalla empieza a verse
+    override fun onStart() {
+        super.onStart()
+        SoundManager.screenStarted()
+    }
+
+    // Se avisa a SoundManager que esta pantalla deja de verse
+    override fun onStop() {
+        super.onStop()
+        SoundManager.screenStopped()
+    }
+
     fun onBetSelected(bet: Int) {
         selectedBet = bet
     }
