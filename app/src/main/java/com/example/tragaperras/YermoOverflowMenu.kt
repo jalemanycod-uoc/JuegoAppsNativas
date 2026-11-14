@@ -44,7 +44,10 @@ object YermoOverflowMenu {
             )
         )
 
-        trigger.setOnClickListener { show(activity, trigger, screenItemId) }
+        trigger.setOnClickListener {
+            SoundManager.playEffect(activity, R.raw.clic)
+            show(activity, trigger, screenItemId)
+        }
     }
 
     private fun show(activity: AppCompatActivity, anchor: AppCompatImageButton, screenItemId: Int) {
@@ -77,6 +80,7 @@ object YermoOverflowMenu {
             row.text = item.title
             row.contentDescription = item.title
             row.setOnClickListener {
+                SoundManager.playEffect(activity, R.raw.clic)
                 popup.dismiss()
                 activity.onOptionsItemSelected(item)
             }
