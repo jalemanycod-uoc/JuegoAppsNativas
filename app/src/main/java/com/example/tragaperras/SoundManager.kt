@@ -2,6 +2,7 @@ package com.example.tragaperras
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.media.AudioManager
 import android.net.Uri
 
 // Se encarga de toda la música y los efectos de sonido del juego.
@@ -85,6 +86,53 @@ object SoundManager {
         playMusic(context, musicId)
     }
 
+    // Llamadas y alarmas
+
+    // Servicio de Android que reparte el turno de sonido entre las apps
+    private var audioManager: AudioManager? = null
+
+    // true si la música se ha pausado por una llamada o una alarma
+    private var pausedBySystem = false
+
+    // Android avisa aquí cuando se pierde o se recupera el turno de sonido
+    private val focusListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
+            focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+            // Llamada, alarma o aviso: pausa la música un momento
+            val player = musicPlayer
+            if (player != null && player.isPlaying) {
+                player.pause()
+                pausedBySystem = true
+            }
+        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+            // La llamada o la alarma han terminado: si la música la habíamos pausado por eso, se vuyelve a poner
+            val player = musicPlayer
+            if (player != null && pausedBySystem) {
+                player.start()
+            }
+            pausedBySystem = false
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+            // Otra app ha empezado a poner música: pausa y no vuelve la música
+            pauseMusic()
+        }
+    }
+
+    // Pide a Android el turno para poner música.
+    // Devuelve false si ahora no se puede (por ejemplo, durante una llamada)
+    private fun requestAudioFocus(context: Context): Boolean {
+        var manager = audioManager
+        if (manager == null) {
+            manager = context.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            audioManager = manager
+        }
+        val result = manager.requestAudioFocus(
+            focusListener,
+            AudioManager.STREAM_MUSIC,
+            AudioManager.AUDIOFOCUS_GAIN
+        )
+        return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+    }
+
     // Música de fondo
 
     // Pone a sonar una música en bucle
@@ -92,6 +140,12 @@ object SoundManager {
         // Si la música está desactivada en Opciones, no suena nada
         if (!isMusicOn(context)) {
             pauseMusic()
+            return
+        }
+
+        // Se pide a android el turno de sonido
+        // Si hubiese una llamada en el momento, se deniega y no se pone la música
+        if (!requestAudioFocus(context)) {
             return
         }
 
@@ -143,6 +197,7 @@ object SoundManager {
         if (player != null && player.isPlaying) {
             player.pause()
         }
+        pausedBySystem = false
     }
 
     // Para la música del todo y libera la memoria que usaba (importante)
@@ -153,6 +208,7 @@ object SoundManager {
         }
         musicPlayer = null
         currentMusic = 0
+        pausedBySystem = false
     }
 
     // LOs efectos de sonido
