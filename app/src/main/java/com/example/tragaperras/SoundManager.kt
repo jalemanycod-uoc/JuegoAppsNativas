@@ -18,6 +18,10 @@ object SoundManager {
     // Reproductor del sonido de giro. Lo guardo para poder pararlo. Sino no deja.
     private var spinPlayer: MediaPlayer? = null
 
+    // Volumen de la música de fondo: 0 = silencio, 1 = máximo.
+    // Lo dejo más bajo que los efectos para que no tape los sonidos del juego
+    private const val MUSIC_VOLUME = 0.4f
+
     // Pantallas de la app que se están viendo
     private var visibleScreens = 0
 
@@ -185,6 +189,7 @@ object SoundManager {
 
         if (newPlayer != null) {
             newPlayer.isLooping = true   // que se repita sin parar
+            newPlayer.setVolume(MUSIC_VOLUME, MUSIC_VOLUME)   // altavoz izquierdo y derecho
             newPlayer.start()
             musicPlayer = newPlayer
             currentMusic = musicToPlay
