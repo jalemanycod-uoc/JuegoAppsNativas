@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.RadioButton
 import android.widget.Switch
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -50,7 +51,10 @@ class SettingsActivity : AppCompatActivity() {
 
         // Atrás: cierra esta pantalla y vuelve a la anterior
         val btnBack = findViewById<Button>(R.id.btnBack)
-        btnBack.setOnClickListener { finish() }
+        btnBack.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
+            finish()
+        }
 
         // Interruptor de Música
         val swMusic = findViewById<Switch>(R.id.swMusic)
@@ -58,6 +62,7 @@ class SettingsActivity : AppCompatActivity() {
         swMusic.isChecked = SoundManager.isMusicOn(this)
         // Cuando el jugador lo cambia
         swMusic.setOnCheckedChangeListener { _, isChecked ->
+            SoundManager.playEffect(this, R.raw.clic)
             SoundManager.setMusicOn(this, isChecked)
             if (isChecked) {
                 SoundManager.playMusic(this, R.raw.musica_menu)
@@ -71,11 +76,14 @@ class SettingsActivity : AppCompatActivity() {
         swSoundEffects.isChecked = SoundManager.isEffectsOn(this)
         swSoundEffects.setOnCheckedChangeListener { _, isChecked ->
             SoundManager.setEffectsOn(this, isChecked)
+            // El sonido de clic va después de guardar, si los efectos se activan se oye, si se han desactivado, no se oir´an.
+            SoundManager.playEffect(this, R.raw.clic)
         }
 
         // Botón Elegir música
         val btnChooseMusic = findViewById<Button>(R.id.btnChooseMusic)
         btnChooseMusic.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             // Abre la lista de archivos, y muestra únicamente los de audio
             chooseMusicLauncher.launch(arrayOf("audio/*"))
         }
@@ -83,10 +91,26 @@ class SettingsActivity : AppCompatActivity() {
         // Botón Música oficial
         val btnOfficialMusic = findViewById<Button>(R.id.btnOfficialMusic)
         btnOfficialMusic.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             // Se borra la canción elegida y luego volvemos a poner la música del juego
             SoundManager.setCustomMusic(this, null)
             SoundManager.restartMusic(this, R.raw.musica_menu)
             Toast.makeText(this, "Música oficial", Toast.LENGTH_SHORT).show()
+        }
+        // Clic en los botones de idioma
+        // Aquí solo pongo el sonido. Cambiar el idioma lo programa otro compañero
+        val rbSpanish = findViewById<RadioButton>(R.id.rbSpanish)
+        val rbCatalan = findViewById<RadioButton>(R.id.rbCatalan)
+        val rbEnglish = findViewById<RadioButton>(R.id.rbEnglish)
+
+        rbSpanish.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
+        }
+        rbCatalan.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
+        }
+        rbEnglish.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
         }
     }
         override fun onResume() {
