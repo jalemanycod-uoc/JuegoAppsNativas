@@ -212,7 +212,14 @@ class GameActivity : AppCompatActivity() {
             }
 
             Outcome.WIN -> {
-                SoundManager.playEffect(this, R.raw.monedas)
+                // Salen tres iguales? Al quitar los repetidos, queda un solo símbolo
+                val symbols = listOf(result.reel1, result.reel2, result.reel3)
+                val threeOfAKind = symbols.distinct().size == 1
+                if (threeOfAKind) {
+                    SoundManager.playEffect(this, R.raw.tres_iguales)
+                } else {
+                    SoundManager.playEffect(this, R.raw.monedas)
+                }
                 animateWinningReels(result)
                 reelArea.postDelayed({ showResultDialog(result) }, 400L)
             }
