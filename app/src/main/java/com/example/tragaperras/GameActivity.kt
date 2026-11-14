@@ -106,6 +106,7 @@ class GameActivity : AppCompatActivity() {
         )
 
         rgBets.setOnCheckedChangeListener { _, checkedId ->
+            SoundManager.playEffect(this, R.raw.clic)
             when (checkedId) {
                 R.id.rbBet10 -> onBetSelected(10)
                 R.id.rbBet25 -> onBetSelected(25)
