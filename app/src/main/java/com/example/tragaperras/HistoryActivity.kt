@@ -52,8 +52,12 @@ class HistoryActivity : AppCompatActivity() {
         lvHistory = findViewById(R.id.lvHistory)
         emptyHistory = findViewById(R.id.tvHistoryEmpty)
 
-        findViewById<View>(R.id.btnBack).setOnClickListener { finish() }
+        findViewById<View>(R.id.btnBack).setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
+            finish()
+        }
         findViewById<View>(R.id.btnBackToGame).setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             openExistingGameOrHome()
         }
 

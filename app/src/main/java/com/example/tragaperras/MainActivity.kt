@@ -66,8 +66,14 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) = Unit
         })
 
-        findViewById<View>(R.id.btnPlay).setOnClickListener { openGame() }
-        findViewById<View>(R.id.btnHistory).setOnClickListener { openHistory() }
+        findViewById<View>(R.id.btnPlay).setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
+            openGame()
+        }
+        findViewById<View>(R.id.btnHistory).setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
+            openHistory()
+        }
     }
 
     override fun onResume() {
