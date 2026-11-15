@@ -9,6 +9,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
+
 
 // Pantalla de opciones. De momento solo es la interfaz:
 // la música, los efectos de sonido y el idioma se programan en otros productos
@@ -36,6 +39,16 @@ class SettingsActivity : AppCompatActivity() {
         btnBack.setOnClickListener { finish() }
     }
 
+    fun LanguageSelector() {
+        // Retrieve the currently configured app locale.
+        // If no app-specific locale is set, LocaleListCompat.get(0) returns null,
+        // so we safely fall back to a default (e.g., "en").
+        val appLocales = AppCompatDelegate.getApplicationLocales()
+        val currentLocaleTag = appLocales.get(0)?.toLanguageTag() ?: "en"
+
+
+
+    }
     // El menú propio reutiliza los mismos IDs y delega en este método.
     override fun onCreateOptionsMenu(menu: Menu): Boolean = false
 

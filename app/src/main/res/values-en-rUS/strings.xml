@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Slot Machine</string>
+    <string name="good_luck">GOOD LUCK!</string>
+    <string name="slotMachine_name">WASTELAND SLOT MACHINE</string>
+    <string name="game_name">%s \'s game</string>
+    <string name="no_prize">NO PRIZE</string>
+    <string name="defeat_message">You have lost %1$d tokens</string>
+    <string name="try_again">TRY AGAIN</string>
+    <string name="prize_two">TWO OF A KIND</string>
+    <string name="prize_three">THREE OF A KIND</string>
+    <string name="win_count">+%1$d tokens</string>
+    <string name="lose_count">-%1$d tokens</string>
+    <string name="game_ended">GAME OVER</string>
+    <string name="insufficient_funds">You have an insufficient balance to keep betting.</string>
+    <string name="restart">RESTART</string>
+    <string name="exit">EXIT</string>
+    <string name="error_restart">Error restarting the game</string>
+    <string name="error_balance">Error reading the balance</string>
+    <string name="error_saving_history">"Error saving the spin and the balance"</string>
+    <string name="insufficient_funds_bet">Insufficient balance</string>
+</resources>

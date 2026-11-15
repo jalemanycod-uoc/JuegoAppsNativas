@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="history_title_p2">HISTORIAL</string>
+    <string name="history_subtitle_p2">REGISTRE DE PARTIDES</string>
+    <string name="history_back_p2">TORNAR</string>
+    <string name="history_back_game_p2">TORNAR AL JOC</string>
+    <string name="history_back_home_p2">TORNAR A L\'INICI</string>
+    <string name="history_empty_p2">Encara no hi ha tiratges registrades</string>
+    <string name="history_error_p2">Error al llegir l\'historial</string>
+    <string name="history_win_p2">VICTORIA</string>
+    <string name="history_loss_p2">DERROTA</string>
+    <string name="history_jackpot_p2">JACKPOT</string>
+    <string name="history_net_p2">%1$s fitxes</string>
+    <string name="history_bet_p2">Aposta: %1$d</string>
+    <string name="history_balance_p2">Saldo: %1$d</string>
+</resources>

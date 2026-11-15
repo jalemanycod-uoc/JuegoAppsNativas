@@ -73,7 +73,7 @@ class GameActivity : AppCompatActivity() {
         if (!nameFromWelcome.isNullOrBlank()) {
             playerName = nameFromWelcome
         }
-        supportActionBar?.title = "Partida de $playerName"
+        supportActionBar?.title = resources.getString(R.string.game_name, playerName)
 
         tvBalance = findViewById(R.id.tvBalance)
         reelArea = findViewById(R.id.reelArea)
@@ -100,7 +100,7 @@ class GameActivity : AppCompatActivity() {
                     }
                 },
                 {
-                    Toast.makeText(this, "Error al leer el saldo", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, resources.getString(R.string.error_balance), Toast.LENGTH_SHORT).show()
                 }
             )
         )
@@ -127,7 +127,7 @@ class GameActivity : AppCompatActivity() {
 
     fun onMachineButtonPressed() {
         if (selectedBet > balance) {
-            Toast.makeText(this, "Saldo insuficiente", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, resources.getString(R.string.insufficient_funds_bet), Toast.LENGTH_SHORT).show()
             UiAnimations.shake(btnMachine)
             return
         }
@@ -158,7 +158,7 @@ class GameActivity : AppCompatActivity() {
                 { },
                 {
                     Toast.makeText(
-                        this, "Error al guardar la tirada y el saldo", Toast.LENGTH_LONG
+                        this, resources.getString(R.string.error_saving_history), Toast.LENGTH_LONG
                     ).show()
                 }
             )
@@ -233,12 +233,13 @@ class GameActivity : AppCompatActivity() {
         ivResult1.setImageResource(drawableFor(result.reel1))
         ivResult2.setImageResource(drawableFor(result.reel2))
         ivResult3.setImageResource(drawableFor(result.reel3))
-        tvDialogBalance.text = "Saldo: $balance fichas"
+        tvDialogBalance.text = resources.getString(R.string.history_balance_p2, balance)
+
 
         when (result.outcome) {
             Outcome.JACKPOT -> {
-                tvTitle.text = "¡JACKPOT!"
-                tvMessage.text = "+${result.prize} fichas"
+                tvTitle.text = resources.getString(R.string.history_jackpot_p2)
+                tvMessage.text = resources.getString(R.string.win_count, result.prize)
             }
             Outcome.WIN -> {
                 val threeOfAKind = listOf(
@@ -246,16 +247,16 @@ class GameActivity : AppCompatActivity() {
                     result.reel2,
                     result.reel3
                 ).distinct().size == 1
-                tvTitle.text = if (threeOfAKind) "¡TRES IGUALES!" else "¡DOS IGUALES!"
-                tvMessage.text = "+${result.prize} fichas"
+                tvTitle.text = if (threeOfAKind) resources.getString(R.string.prize_three) else resources.getString(R.string.prize_two)
+                tvMessage.text = resources.getString(R.string.win_count, result.prize)
             }
             Outcome.LOSS -> {
-                tvTitle.text = "SIN PREMIO"
-                tvMessage.text = "Has perdido $selectedBet fichas"
+                tvTitle.text = resources.getString(R.string.no_prize)
+                tvMessage.text = resources.getString(R.string.defeat_message, selectedBet)
             }
         }
 
-        btnPrimary.text = "VOLVER A APOSTAR"
+        btnPrimary.text = resources.getString(R.string.try_again)
 
         val dialog = AlertDialog.Builder(this)
             .setView(view)
@@ -290,9 +291,9 @@ class GameActivity : AppCompatActivity() {
         val btnPrimary = view.findViewById<Button>(R.id.btnResultPrimary)
         val btnSecondary = view.findViewById<Button>(R.id.btnResultSecondary)
 
-        tvTitle.text = "FIN DEL JUEGO"
-        tvMessage.text = "No tienes fichas suficientes para seguir apostando."
-        tvDialogBalance.text = "Saldo: $balance fichas"
+        tvTitle.text = resources.getString(R.string.game_ended)
+        tvMessage.text = resources.getString(R.string.insufficient_funds)
+        tvDialogBalance.text = resources.getString(R.string.history_balance_p2, balance)
 
         if (lastResult != null) {
             ivResult1.setImageResource(drawableFor(lastResult.reel1))
@@ -304,8 +305,8 @@ class GameActivity : AppCompatActivity() {
             ivResult3.visibility = View.GONE
         }
 
-        btnPrimary.text = "REINICIAR"
-        btnSecondary.text = "SALIR"
+        btnPrimary.text = resources.getString(R.string.restart)
+        btnSecondary.text = resources.getString(R.string.exit)
         btnSecondary.visibility = View.VISIBLE
 
         val dialog = AlertDialog.Builder(this)
@@ -329,7 +330,7 @@ class GameActivity : AppCompatActivity() {
                     },
                     {
                         btnPrimary.isEnabled = true
-                        Toast.makeText(this, "Error al reiniciar la partida", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, resources.getString(R.string.error_restart), Toast.LENGTH_LONG).show()
                     }
                 )
             )
@@ -397,7 +398,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun updateBalanceDisplay(amount: Int, color: Int) {
-        tvBalance.text = "Saldo: $amount"
+        tvBalance.text = resources.getString(R.string.history_balance_p2, amount)
         tvBalance.setTextColor(color)
     }
 

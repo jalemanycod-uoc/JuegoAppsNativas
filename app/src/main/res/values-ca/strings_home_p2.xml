@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_brand_prefix">ELS</string>
+    <string name="home_brand_name">APKPOCALIPTICS</string>
+    <string name="home_welcome">¡ET DONAM LA BENVINGUDA!</string>
+    <string name="home_name_hint">Escriu el teu nom</string>
+    <string name="home_name_required">Escriu el teu nom per jugar</string>
+    <string name="home_play">JUGAR</string>
+    <string name="home_history">HISTORIAL</string>
+    <string name="home_top_scores">MILLORS PUNTUACIONS</string>
+    <string name="home_score_coins">%1$d monedes</string>
+    <string name="home_scores_empty">Encara no hi ha partides</string>
+    <string name="home_scores_error">Error al llegir les puntuacions</string>
+</resources>
