@@ -2,13 +2,13 @@
 <resources>
     <string name="home_brand_prefix">THE</string>
     <string name="home_brand_name">APK-POCALYPTICS</string>
-    <string name="home_welcome">¡WELCOME!</string>
+    <string name="home_welcome">WELCOME!</string>
     <string name="home_name_hint">Enter your name</string>
     <string name="home_name_required">Enter your name to play</string>
     <string name="home_play">PLAY</string>
     <string name="home_history">HISTORY</string>
     <string name="home_top_scores">TOP SCORES</string>
     <string name="home_score_coins">%1$d tokens</string>
-    <string name="home_scores_empty">No games have been registered currently.</string>
+    <string name="home_scores_empty">No games have been registered.</string>
     <string name="home_scores_error">Error reading the scores.</string>
 </resources>

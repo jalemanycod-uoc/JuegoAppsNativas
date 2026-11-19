@@ -2,7 +2,7 @@
 <resources>
     <string name="home_brand_prefix">ELS</string>
     <string name="home_brand_name">APKPOCALIPTICS</string>
-    <string name="home_welcome">¡ET DONAM LA BENVINGUDA!</string>
+    <string name="home_welcome">ET DONEM LA BENVINGUDA!</string>
     <string name="home_name_hint">Escriu el teu nom</string>
     <string name="home_name_required">Escriu el teu nom per jugar</string>
     <string name="home_play">JUGAR</string>

@@ -6,11 +6,11 @@
     <string name="no_prize">SENSE PREMI</string>
     <string name="defeat_message">Has perdut %1$d fitxes</string>
     <string name="try_again">TORNAR A APOSTAR</string>
-    <string name="prize_two">DOS IGUALs</string>
-    <string name="prize_three">TRES IGUALES</string>
+    <string name="prize_two">DOS IGUALS</string>
+    <string name="prize_three">TRES IGUALS</string>
     <string name="win_count">+%1$d fitxes</string>
     <string name="lose_count">-%1$d fitxes</string>
-    <string name="game_ended">FIN DEL JOC</string>
+    <string name="game_ended">FI DEL JOC</string>
     <string name="insufficient_funds">No tens fitxes suficients per seguir apostant.</string>
     <string name="restart">REINICIAR</string>
     <string name="exit">SORTIR</string>
