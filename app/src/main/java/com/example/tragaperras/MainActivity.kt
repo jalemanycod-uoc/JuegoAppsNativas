@@ -66,13 +66,33 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) = Unit
         })
 
-        findViewById<View>(R.id.btnPlay).setOnClickListener { openGame() }
-        findViewById<View>(R.id.btnHistory).setOnClickListener { openHistory() }
+        findViewById<View>(R.id.btnPlay).setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
+            openGame()
+        }
+        findViewById<View>(R.id.btnHistory).setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
+            openHistory()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         loadBestScores()
+        // música del menú
+        SoundManager.playMusic(this, R.raw.musica_menu)
+    }
+
+    // Avisamos a SoundManager que esta pantalla empieza a verse
+    override fun onStart() {
+        super.onStart()
+        SoundManager.screenStarted()
+    }
+
+    // Avisamos a SoundManager que esta pantalla deja de verse
+    override fun onStop() {
+        super.onStop()
+        SoundManager.screenStopped()
     }
 
     fun openGame() {

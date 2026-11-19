@@ -94,9 +94,52 @@
                     android:trackTint="@color/settings_track_tint_p2"
                     android:contentDescription="@string/settings_music_p2"
                     android:minWidth="52dp" />
+
             </FrameLayout>
 
+            <!-- Botones para elegir la música: una canción del móvil o la oficial del juego.
+                 Mismo estilo que los botones de idioma. -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:paddingStart="11dp"
+                android:paddingEnd="11dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnChooseMusic"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="4dp"
+                    android:background="@drawable/settings_radio_selector_p2"
+                    android:backgroundTint="@null"
+                    app:backgroundTint="@null"
+                    android:text="@string/settings_choose_music_p2"
+                    android:textAllCaps="false"
+                    android:textColor="@color/settings_radio_text_p2"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btnOfficialMusic"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="4dp"
+                    android:background="@drawable/settings_radio_selector_p2"
+                    android:backgroundTint="@null"
+                    app:backgroundTint="@null"
+                    android:text="@string/settings_official_music_p2"
+                    android:textAllCaps="false"
+                    android:textColor="@color/settings_radio_text_p2"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
             <!-- EFECTOS: mismo ID que el anterior SettingsActivity. -->
+
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="83dp"

@@ -106,6 +106,7 @@ class GameActivity : AppCompatActivity() {
         )
 
         rgBets.setOnCheckedChangeListener { _, checkedId ->
+            SoundManager.playEffect(this, R.raw.clic)
             when (checkedId) {
                 R.id.rbBet10 -> onBetSelected(10)
                 R.id.rbBet25 -> onBetSelected(25)
@@ -121,6 +122,26 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Música de la partida ( es otra diferente a la del menú)
+        SoundManager.playMusic(this, R.raw.musica_partida)
+    }
+
+    // Se avisa a SoundManager que esta pantalla empieza a verse
+    override fun onStart() {
+        super.onStart()
+        SoundManager.screenStarted()
+    }
+
+    // Se avisa a SoundManager que esta pantalla deja de verse
+    override fun onStop() {
+        super.onStop()
+        SoundManager.screenStopped()
+        // Si se sale mientras giran los rodillos, que no se quede sonando
+        SoundManager.stopSpin()
+    }
+
     fun onBetSelected(bet: Int) {
         selectedBet = bet
     }
@@ -133,6 +154,8 @@ class GameActivity : AppCompatActivity() {
         }
 
         btnMachine.isEnabled = false
+        // Empieza el sonido de los rodillos girando
+        SoundManager.playSpin(this)
 
         // Previsualización: se descuenta visualmente la apuesta, sin cambiar
         // el saldo real hasta que se obtiene el resultado de SlotMachineEngine.
@@ -144,6 +167,8 @@ class GameActivity : AppCompatActivity() {
         reelAnimator.animateReel(ivReel1, result.reel1, 1400L) { }
         reelAnimator.animateReel(ivReel2, result.reel2, 1900L) { }
         reelAnimator.animateReel(ivReel3, result.reel3, 2500L) {
+            // El último rodillo se ha parado: se para el sonido de giro
+            SoundManager.stopSpin()
             // Dejamos 750 ms para observar los símbolos finales.
             reelArea.postDelayed({
                 renderResult(result)
@@ -179,6 +204,7 @@ class GameActivity : AppCompatActivity() {
 
         when (result.outcome) {
             Outcome.JACKPOT -> {
+                SoundManager.playEffect(this, R.raw.jackpot)
                 UiAnimations.jackpotPulse(ivReel1)
                 UiAnimations.jackpotPulse(ivReel2)
                 UiAnimations.jackpotPulse(ivReel3)
@@ -186,6 +212,14 @@ class GameActivity : AppCompatActivity() {
             }
 
             Outcome.WIN -> {
+                // Salen tres iguales? Al quitar los repetidos, queda un solo símbolo
+                val symbols = listOf(result.reel1, result.reel2, result.reel3)
+                val threeOfAKind = symbols.distinct().size == 1
+                if (threeOfAKind) {
+                    SoundManager.playEffect(this, R.raw.tres_iguales)
+                } else {
+                    SoundManager.playEffect(this, R.raw.monedas)
+                }
                 animateWinningReels(result)
                 reelArea.postDelayed({ showResultDialog(result) }, 400L)
             }
@@ -193,8 +227,12 @@ class GameActivity : AppCompatActivity() {
             Outcome.LOSS -> {
                 UiAnimations.shake(tvBalance)
                 if (balance < GameRules.VALID_BETS.min()) {
+                    // Se ha quedado sin fichas (sonido de perder la partida)
+                    SoundManager.playEffect(this, R.raw.perder_partida)
                     reelArea.postDelayed({ showGameOverDialog(result) }, 350L)
                 } else {
+                    // Sin premio (sonido de perder)
+                    SoundManager.playEffect(this, R.raw.perder)
                     reelArea.postDelayed({ showResultDialog(result) }, 350L)
                 }
             }
@@ -267,6 +305,7 @@ class GameActivity : AppCompatActivity() {
         configureResultDialog(dialog)
 
         btnPrimary.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             dialog.dismiss()
             updateBalanceNeutral()
             btnMachine.isEnabled = true
@@ -318,6 +357,7 @@ class GameActivity : AppCompatActivity() {
         configureResultDialog(dialog)
 
         btnPrimary.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             btnPrimary.isEnabled = false
             // startNewGame actualiza tanto saldo como número de partida en SQLite.
             disposables.add(
@@ -337,6 +377,7 @@ class GameActivity : AppCompatActivity() {
         }
 
         btnSecondary.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             dialog.dismiss()
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
