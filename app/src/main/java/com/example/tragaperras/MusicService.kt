@@ -198,7 +198,7 @@ class MusicService : Service() {
         currentMusic = musicToPlay
         isPreparing = true
 
-        // Prepara la música en otro hilo, que gestiona el propio MediaPlayer. 
+        // Prepara la música en otro hilo, que gestiona el propio MediaPlayer.
         newPlayer.prepareAsync()
     }
 
