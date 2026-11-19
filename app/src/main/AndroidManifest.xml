@@ -2,10 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Servicio que reproduce la música de fondo -->
-    <service
-        android:name=".MusicService"
-        android:exported="false" />
 
     <application
         android:allowBackup="true"
@@ -39,6 +35,11 @@
             android:name=".SettingsActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <!-- Servicio que reproduce la música de fondo -->
+        <service
+            android:name=".MusicService"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -1,26 +1,15 @@
 package com.example.tragaperras
 
 import android.content.Context
+import android.content.Intent
 import android.media.MediaPlayer
-import android.media.AudioManager
-import android.net.Uri
 
 // Se encarga de toda la música y los efectos de sonido del juego.
 
 object SoundManager {
 
-    // Reproductor de la música de fondo
-    private var musicPlayer: MediaPlayer? = null
-
-    // Qué música está sonando ahora (por ejemplo, R.raw.musica_menu - 0 = ninguna)
-    private var currentMusic = 0
-
     // Reproductor del sonido de giro. Lo guardo para poder pararlo. Sino no deja.
     private var spinPlayer: MediaPlayer? = null
-
-    // Volumen de la música de fondo: 0 = silencio, 1 = máximo.
-    // Lo dejo más bajo que los efectos para que no tape los sonidos del juego
-    private const val MUSIC_VOLUME = 0.4f
 
     // Pantallas de la app que se están viendo
     private var visibleScreens = 0
@@ -84,136 +73,53 @@ object SoundManager {
         prefs.edit().putString(KEY_CUSTOM_MUSIC, musicAddress).apply()
     }
 
-    // Para la música y la vuelve a poner (al cambiar de canción)
-    fun restartMusic(context: Context, musicId: Int) {
-        stopMusic()
-        playMusic(context, musicId)
-    }
-
-    // Llamadas y alarmas
-
-    // Servicio de Android que reparte el turno de sonido entre las apps
-    private var audioManager: AudioManager? = null
-
-    // true si la música se ha pausado por una llamada o una alarma
-    private var pausedBySystem = false
-
-    // Android avisa aquí cuando se pierde o se recupera el turno de sonido
-    private val focusListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
-        if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
-            focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
-            // Llamada, alarma o aviso: pausa la música un momento
-            val player = musicPlayer
-            if (player != null && player.isPlaying) {
-                player.pause()
-                pausedBySystem = true
-            }
-        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-            // La llamada o la alarma han terminado: si la música la habíamos pausado por eso, se vuyelve a poner
-            val player = musicPlayer
-            if (player != null && pausedBySystem) {
-                player.start()
-            }
-            pausedBySystem = false
-        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-            // Otra app ha empezado a poner música: pausa y no vuelve la música
-            pauseMusic()
-        }
-    }
-
-    // Pide a Android el turno para poner música.
-    // Devuelve false si ahora no se puede (por ejemplo, durante una llamada)
-    private fun requestAudioFocus(context: Context): Boolean {
-        var manager = audioManager
-        if (manager == null) {
-            manager = context.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-            audioManager = manager
-        }
-        val result = manager.requestAudioFocus(
-            focusListener,
-            AudioManager.STREAM_MUSIC,
-            AudioManager.AUDIOFOCUS_GAIN
-        )
-        return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-    }
-
     // Música de fondo
+    // La música la reproduce MusicService. Aquí solo se le envian órdenes
+
+    // Lo guarda para poder enviar órdenes al servicio desde las funciones que no lo reciben (pauseMusic y stopMusic)
+    private var appContext: Context? = null
+
+    // Envía una orden al servicio de música
+    private fun sendToMusicService(context: Context, action: String, musicId: Int) {
+        val intent = Intent(context, MusicService::class.java)
+        intent.action = action
+        intent.putExtra(MusicService.EXTRA_MUSIC_ID, musicId)
+        context.startService(intent)
+    }
 
     // Pone a sonar una música en bucle
     fun playMusic(context: Context, musicId: Int) {
+        appContext = context.applicationContext
+
         // Si la música está desactivada en Opciones, no suena nada
         if (!isMusicOn(context)) {
             pauseMusic()
             return
         }
-
-        // Se pide a android el turno de sonido
-        // Si hubiese una llamada en el momento, se deniega y no se pone la música
-        if (!requestAudioFocus(context)) {
-            return
-        }
-
-        // Si el jugador ha elegido una canción del móvil, suena esa en lugar de la oficial.
-        // La marco con el número -1 para saber que es la canción elegida
-        val customMusic = getCustomMusic(context)
-        var musicToPlay = musicId
-        if (customMusic != null) {
-            musicToPlay = -1
-        }
-
-        // Si ya está puesta esta misma música, solo se reanuda si estaba en pausa
-        val player = musicPlayer
-        if (player != null && currentMusic == musicToPlay) {
-            if (!player.isPlaying) {
-                player.start()
-            }
-            return
-        }
-
-        // Si era otra música, se para y se pone la nueva
-        stopMusic()
-        var newPlayer: MediaPlayer?
-        if (customMusic != null) {
-            newPlayer = MediaPlayer.create(context.applicationContext, Uri.parse(customMusic))
-        } else {
-            newPlayer = MediaPlayer.create(context.applicationContext, musicId)
-        }
-
-        // Si la canción elegida ya no se puede abrir (por ejemplo, se ha borrado del móvil),
-        // se vuelve a la música oficial
-        if (newPlayer == null && customMusic != null) {
-            setCustomMusic(context, null)
-            newPlayer = MediaPlayer.create(context.applicationContext, musicId)
-            musicToPlay = musicId
-        }
-
-        if (newPlayer != null) {
-            newPlayer.isLooping = true   // que se repita sin parar
-            newPlayer.setVolume(MUSIC_VOLUME, MUSIC_VOLUME)   // altavoz izquierdo y derecho
-            newPlayer.start()
-            musicPlayer = newPlayer
-            currentMusic = musicToPlay
-        }
+        sendToMusicService(context.applicationContext, MusicService.ACTION_PLAY, musicId)
     }
 
-    // Pausa la música (por ejemplo cuando salimoss de la app)
+    // Pausa la música cuaando por ejemplo se sale de la app)
     fun pauseMusic() {
-        val player = musicPlayer
-        if (player != null && player.isPlaying) {
-            player.pause()
+        val context = appContext
+        if (context != null) {
+            sendToMusicService(context, MusicService.ACTION_PAUSE, 0)
         }
-        pausedBySystem = false
     }
 
-    // Para la música del todo y libera la memoria que usaba (importante)
+    // Para la música del todo el servicio libera la memoria que usaba
     fun stopMusic() {
-        val player = musicPlayer
-        if (player != null) {
-            player.release()
+        val context = appContext
+        if (context != null) {
+            sendToMusicService(context, MusicService.ACTION_STOP, 0)
         }
-        musicPlayer = null
-        currentMusic = 0
-        pausedBySystem = false
+    }
+
+    // Para la música y la vuelve a poner, al cambiar de canción
+    fun restartMusic(context: Context, musicId: Int) {
+        appContext = context.applicationContext
+        stopMusic()
+        playMusic(context, musicId)
     }
 
     // LOs efectos de sonido
