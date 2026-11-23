@@ -212,6 +212,17 @@ class HistoryActivity : AppCompatActivity() {
                 )
             }
 
+            // Abrir ayuda
+            R.id.menu_help -> {
+
+                startActivity(
+                    Intent(
+                        this,
+                        HelpActivity::class.java
+                    )
+                )
+            }
+
             // Cerrar la aplicación
             R.id.menu_exit -> {
                 finishAffinity()

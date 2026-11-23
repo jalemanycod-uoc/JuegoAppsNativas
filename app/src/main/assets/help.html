@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayuda - Tragaperras</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #E0E0E0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 16px;
+            line-height: 1.6;
+        }
+        h1, h2 {
+            color: #FFCA28;
+            border-bottom: 2px solid #FFCA28;
+            padding-bottom: 6px;
+        }
+        h1 {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-top: 10px;
+        }
+        h2 {
+            font-size: 1.3rem;
+            margin-top: 20px;
+        }
+        .card {
+            background-color: #1E1E1E;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #2C2C2C;
+            color: #FFCA28;
+        }
+        tr:nth-child(even) {
+            background-color: #181818;
+        }
+        .highlight {
+            color: #4FAF50;
+            font-weight: bold;
+        }
+        .jackpot {
+            color: #FF5252;
+            font-weight: bold;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Guía de Ayuda - Tragaperras</h1>
+
+    <div class="card">
+        <h2>Cómo Jugar</h2>
+        <p>Bienvenido al juego de tragaperras apocalíptico. El objetivo es conseguir combinaciones de símbolos coincidentes para incrementar tu saldo de monedas.</p>
+        <ul>
+            <li>Selecciona el importe de tu apuesta (10, 25 o 50 monedas).</li>
+            <li>Pulsa el botón <strong>Girar</strong> o acciona la <strong>palanca</strong> para iniciar la tirada.</li>
+            <li>Los tres rodillos girarán y se detendrán progresivamente de izquierda a derecha.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Premios y Combinaciones</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Combinación</th>
+                    <th>Premio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="jackpot">3 Símbolos de Explosión Nuclear</span></td>
+                    <td><span class="jackpot">¡JACKPOT! Multiplicador máximo</span></td>
+                </tr>
+                <tr>
+                    <td><span class="highlight">3 Símbolos iguales</span></td>
+                    <td>Premio de 3 iguales (Multiplica la apuesta)</td>
+                </tr>
+                <tr>
+                    <td>2 Símbolos iguales</td>
+                    <td>Premio de 2 iguales</td>
+                </tr>
+                <tr>
+                    <td>Sin coincidencias</td>
+                    <td>Se pierde la apuesta realizada</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Novedades del Producto 2</h2>
+        <ul>
+            <li><strong>Ubicación GPS:</strong> Se guarda la coordenada (latitud y longitud) del lugar donde se realizó cada tirada en la base de datos local SQLite.</li>
+            <li><strong>Notificaciones de Victoria:</strong> Al conseguir un premio ganador, recibirás una notificación de victoria. Al pulsar la notificación, podrás consultar el tiempo exacto en segundos que tardó en resolverse la tirada.</li>
+        </ul>
+    </div>
+</body>
+</html>

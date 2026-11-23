@@ -39,7 +39,9 @@ class DatabaseHelper(context: Context) :
                 reel3 TEXT NOT NULL,
                 outcome TEXT NOT NULL,
                 prize INTEGER NOT NULL,
-                balance_after INTEGER NOT NULL
+                balance_after INTEGER NOT NULL,
+                latitude REAL,
+                longitude REAL
             )
             """
         )
@@ -50,11 +52,16 @@ class DatabaseHelper(context: Context) :
         )
     }
 
-    // Se ejecuta si cambiamos DATABASE_VERSION: borra las tablas y las vuelve a crear
+    // Se ejecuta si cambiamos DATABASE_VERSION
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS game_results")
-        db.execSQL("DROP TABLE IF EXISTS player_state")
-        onCreate(db)
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE game_results ADD COLUMN latitude REAL")
+            db.execSQL("ALTER TABLE game_results ADD COLUMN longitude REAL")
+        } else {
+            db.execSQL("DROP TABLE IF EXISTS game_results")
+            db.execSQL("DROP TABLE IF EXISTS player_state")
+            onCreate(db)
+        }
     }
 
     // Guarda una tirada con el número de la partida actual
@@ -70,6 +77,16 @@ class DatabaseHelper(context: Context) :
         values.put("outcome", result.outcome.name)
         values.put("prize", result.prize)
         values.put("balance_after", result.balanceAfter)
+        if (result.latitude != null) {
+            values.put("latitude", result.latitude)
+        } else {
+            values.putNull("latitude")
+        }
+        if (result.longitude != null) {
+            values.put("longitude", result.longitude)
+        } else {
+            values.putNull("longitude")
+        }
         return writableDatabase.insert("game_results", null, values)
     }
 
@@ -134,6 +151,11 @@ class DatabaseHelper(context: Context) :
 
         // El cursor va recorriendo las filas una a una
         while (cursor.moveToNext()) {
+            val latIdx = cursor.getColumnIndex("latitude")
+            val lngIdx = cursor.getColumnIndex("longitude")
+            val lat = if (latIdx != -1 && !cursor.isNull(latIdx)) cursor.getDouble(latIdx) else null
+            val lng = if (lngIdx != -1 && !cursor.isNull(lngIdx)) cursor.getDouble(lngIdx) else null
+
             val game = GameResult(
                 id = cursor.getLong(cursor.getColumnIndexOrThrow("id")),
                 playerName = cursor.getString(cursor.getColumnIndexOrThrow("player_name")) ?: "",
@@ -144,7 +166,9 @@ class DatabaseHelper(context: Context) :
                 reel3 = Symbol.valueOf(cursor.getString(cursor.getColumnIndexOrThrow("reel3"))),
                 outcome = Outcome.valueOf(cursor.getString(cursor.getColumnIndexOrThrow("outcome"))),
                 prize = cursor.getInt(cursor.getColumnIndexOrThrow("prize")),
-                balanceAfter = cursor.getInt(cursor.getColumnIndexOrThrow("balance_after"))
+                balanceAfter = cursor.getInt(cursor.getColumnIndexOrThrow("balance_after")),
+                latitude = lat,
+                longitude = lng
             )
             games.add(game)
         }

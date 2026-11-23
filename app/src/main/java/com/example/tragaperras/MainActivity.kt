@@ -170,6 +170,11 @@ class MainActivity : AppCompatActivity() {
                     Intent(this, SettingsActivity::class.java)
                 )
 
+            R.id.menu_help ->
+                startActivity(
+                    Intent(this, HelpActivity::class.java)
+                )
+
             R.id.menu_exit ->
                 finishAffinity()
         }

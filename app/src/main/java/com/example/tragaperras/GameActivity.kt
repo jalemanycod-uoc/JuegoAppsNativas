@@ -1,6 +1,9 @@
 package com.example.tragaperras
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -10,11 +13,14 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import java.util.Locale
 
 class GameActivity : AppCompatActivity() {
 
@@ -29,12 +35,22 @@ class GameActivity : AppCompatActivity() {
     // Guarda las llamadas de RxJava para cancelarlas al cerrar la pantalla
     private val disposables = CompositeDisposable()
 
+    // Helpers para ubicación y notificaciones
+    private lateinit var locationHelper: LocationHelper
+    private lateinit var notificationHelper: NotificationHelper
+
+    // Tiempo de inicio de la tirada
+    private var spinStartTime: Long = 0L
+
     private lateinit var tvBalance: TextView
     private lateinit var ivReel1: ImageView
     private lateinit var ivReel2: ImageView
     private lateinit var ivReel3: ImageView
     private lateinit var ivLever: ImageView
     private lateinit var btnSpin: Button
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { _ -> }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +74,11 @@ class GameActivity : AppCompatActivity() {
         }
         supportActionBar?.title = "Partida de $playerName"
 
+        locationHelper = LocationHelper(this)
+        notificationHelper = NotificationHelper(this)
+
+        requestRequiredPermissions()
+
         tvBalance = findViewById(R.id.tvBalance)
         val rgBets = findViewById<RadioGroup>(R.id.rgBets)
         ivReel1 = findViewById(R.id.ivReel1)
@@ -80,7 +101,7 @@ class GameActivity : AppCompatActivity() {
                         showGameOver()
                     }
                 },
-                { error ->
+                { _ ->
                     Toast.makeText(this, "Error al leer el saldo", Toast.LENGTH_SHORT).show()
                 }
             )
@@ -98,6 +119,56 @@ class GameActivity : AppCompatActivity() {
         // La palanca y el botón Girar hacen lo mismo
         ivLever.setOnClickListener { onLeverPulled() }
         btnSpin.setOnClickListener { onLeverPulled() }
+
+        checkNotificationIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        checkNotificationIntent(intent)
+    }
+
+    private fun checkNotificationIntent(intent: Intent?) {
+        if (intent?.hasExtra(NotificationHelper.EXTRA_RESOLUTION_TIME) == true) {
+            val durationSeconds = intent.getDoubleExtra(NotificationHelper.EXTRA_RESOLUTION_TIME, 0.0)
+            intent.removeExtra(NotificationHelper.EXTRA_RESOLUTION_TIME)
+            val formattedTime = String.format(Locale.getDefault(), "%.2f", durationSeconds)
+            AlertDialog.Builder(this)
+                .setTitle("Tiempo de Resolución")
+                .setMessage("La tirada ganadora tardó $formattedTime segundos en resolverse.")
+                .setPositiveButton("Aceptar", null)
+                .show()
+        }
+    }
+
+    private fun requestRequiredPermissions() {
+        val permissions = mutableListOf<String>()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                permissions.add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
+            permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
+
+        if (permissions.isNotEmpty()) {
+            requestPermissionLauncher.launch(permissions.toTypedArray())
+        }
     }
 
     fun onBetSelected(bet: Int) {
@@ -115,16 +186,29 @@ class GameActivity : AppCompatActivity() {
         ivLever.isEnabled = false
         btnSpin.isEnabled = false
 
+        spinStartTime = System.currentTimeMillis()
+
+        var currentLat: Double? = null
+        var currentLng: Double? = null
+
+        // Capturar la ubicación en paralelo sin bloquear la animación
+        locationHelper.getCurrentLocation { lat, lng ->
+            currentLat = lat
+            currentLng = lng
+        }
+
         // Copy() hace una copia del resultado añadiéndole el nombre del jugador
         val result = slotMachine.spin(selectedBet, balance).copy(playerName = playerName)
 
-        // Los rodillos se paran de izquierda a derecha
+        // Los rodillos se paran de izquierda a derecha arrancando la animación inmediatamente
         reelAnimator.animateReel(ivReel1, result.reel1, 1000) { }
         reelAnimator.animateReel(ivReel2, result.reel2, 1500) { }
         reelAnimator.animateReel(ivReel3, result.reel3, 2000) {
+            val durationSeconds = (System.currentTimeMillis() - spinStartTime) / 1000.0
+            val finalResult = result.copy(latitude = currentLat, longitude = currentLng)
             // Cuando para el último rodillo, mostramos y guardamos el resultado
-            renderResult(result)
-            saveResult(result)
+            renderResult(finalResult, durationSeconds)
+            saveResult(finalResult)
         }
     }
 
@@ -133,7 +217,7 @@ class GameActivity : AppCompatActivity() {
         disposables.add(
             repository.saveGame(result).subscribe(
                 { },
-                { error ->
+                { _ ->
                     Toast.makeText(this, "Error al guardar la partida", Toast.LENGTH_SHORT).show()
                 }
             )
@@ -141,7 +225,7 @@ class GameActivity : AppCompatActivity() {
         disposables.add(
             repository.saveBalance(result.balanceAfter).subscribe(
                 { },
-                { error ->
+                { _ ->
                     Toast.makeText(this, "Error al guardar el saldo", Toast.LENGTH_SHORT).show()
                 }
             )
@@ -149,7 +233,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     // Actualiza el saldo y muestra el aviso que toque
-    fun renderResult(result: GameResult) {
+    fun renderResult(result: GameResult, durationSeconds: Double = 0.0) {
         balance = result.balanceAfter
         updateBalance()
 
@@ -157,8 +241,12 @@ class GameActivity : AppCompatActivity() {
         btnSpin.isEnabled = true
 
         when (result.outcome) {
-            Outcome.JACKPOT -> showJackpotPopup(result.prize)
+            Outcome.JACKPOT -> {
+                notificationHelper.sendVictoryNotification(durationSeconds)
+                showJackpotPopup(result.prize)
+            }
             Outcome.WIN -> {
+                notificationHelper.sendVictoryNotification(durationSeconds)
                 // Miramos los símbolos: si al quitar los repetidos queda 1, eran 3 iguales
                 val symbols = listOf(result.reel1, result.reel2, result.reel3)
                 val threeOfAKind = symbols.distinct().size == 1
@@ -257,6 +345,7 @@ class GameActivity : AppCompatActivity() {
             R.id.menu_home -> startActivity(Intent(this, MainActivity::class.java))
             R.id.menu_history -> startActivity(Intent(this, HistoryActivity::class.java))
             R.id.menu_settings -> startActivity(Intent(this, SettingsActivity::class.java))
+            R.id.menu_help -> startActivity(Intent(this, HelpActivity::class.java))
             R.id.menu_exit -> finishAffinity()
         }
         return true

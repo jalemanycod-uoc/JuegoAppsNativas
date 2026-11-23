@@ -11,5 +11,7 @@ data class GameResult(
     val reel3: Symbol,         // símbolo del rodillo 3
     val outcome: Outcome,      // resultado: WIN, LOSS o JACKPOT
     val prize: Int,            // monedas ganadas (0 si se pierde)
-    val balanceAfter: Int      // saldo después de la tirada
+    val balanceAfter: Int,     // saldo después de la tirada
+    val latitude: Double? = null,  // latitud donde se realizó la tirada
+    val longitude: Double? = null  // longitud donde se realizó la tirada
 )

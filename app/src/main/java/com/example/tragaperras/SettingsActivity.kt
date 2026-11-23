@@ -104,6 +104,17 @@ class SettingsActivity : AppCompatActivity() {
                 )
             }
 
+            // Abrir ayuda
+            R.id.menu_help -> {
+
+                startActivity(
+                    Intent(
+                        this,
+                        HelpActivity::class.java
+                    )
+                )
+            }
+
             // Cerrar completamente la aplicación
             R.id.menu_exit -> {
                 finishAffinity()
