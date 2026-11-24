@@ -31,7 +31,7 @@ class SettingsActivity : AppCompatActivity() {
                 contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 SoundManager.setCustomMusic(this, uri.toString())
                 SoundManager.restartMusic(this, R.raw.musica_menu)
-                Toast.makeText(this, "Música cambiada", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.settings_music_changed, Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -99,7 +99,7 @@ class SettingsActivity : AppCompatActivity() {
             // Se borra la canción elegida y luego volvemos a poner la música del juego
             SoundManager.setCustomMusic(this, null)
             SoundManager.restartMusic(this, R.raw.musica_menu)
-            Toast.makeText(this, "Música oficial", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.settings_music_official, Toast.LENGTH_SHORT).show()
         }
         // Clic en los botones de idioma
         // Genera los efectos de sonido y cambia el idioma. Adicionalmente, al entrar en opciones, marca el radiobutton automáticamente del idioma actual
@@ -108,10 +108,14 @@ class SettingsActivity : AppCompatActivity() {
         val rbEnglish = findViewById<RadioButton>(R.id.rbEnglish)
 
         val appLocales = AppCompatDelegate.getApplicationLocales()
-        val currentLocaleTag = appLocales.get(0)?.toLanguageTag() ?: "es"
+        val currentLocaleTag = if (!appLocales.isEmpty) {
+            appLocales.get(0)?.language ?: "es"
+        } else {
+            java.util.Locale.getDefault().language
+        }
         when {
-            currentLocaleTag.startsWith("en") -> rbEnglish.isChecked = true
-            currentLocaleTag.startsWith("ca") -> rbCatalan.isChecked = true
+            currentLocaleTag.startsWith("en", ignoreCase = true) -> rbEnglish.isChecked = true
+            currentLocaleTag.startsWith("ca", ignoreCase = true) -> rbCatalan.isChecked = true
             else -> rbSpanish.isChecked = true
         }
 
@@ -146,18 +150,6 @@ class SettingsActivity : AppCompatActivity() {
             super.onStop()
             SoundManager.screenStopped()
         }
-
-
-    fun LanguageSelector() {
-        // Retrieve the currently configured app locale.
-        // If no app-specific locale is set, LocaleListCompat.get(0) returns null,
-        // so we safely fall back to a default (e.g., "en").
-        val appLocales = AppCompatDelegate.getApplicationLocales()
-        val currentLocaleTag = appLocales.get(0)?.toLanguageTag() ?: "en"
-
-
-
-    }
     // El menú propio reutiliza los mismos IDs y delega en este método.
     override fun onCreateOptionsMenu(menu: Menu): Boolean = false
 

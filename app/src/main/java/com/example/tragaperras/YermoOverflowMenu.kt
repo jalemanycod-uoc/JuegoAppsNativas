@@ -26,7 +26,7 @@ object YermoOverflowMenu {
 
     fun install(activity: AppCompatActivity, toolbar: Toolbar, screenItemId: Int) {
         val trigger = AppCompatImageButton(activity).apply {
-            contentDescription = "Abrir menú de navegación"
+            contentDescription = activity.getString(R.string.menu_overflow_description)
             setImageResource(R.drawable.ic_more_vert_p2)
             setColorFilter(Color.parseColor("#FFF0D5"))
             scaleType = ImageView.ScaleType.CENTER_INSIDE

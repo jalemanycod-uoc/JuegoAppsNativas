@@ -56,7 +56,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="LOS APKPOCALÍPTICOS"
+                        android:text="@string/home_brand_name"
                         android:textColor="#E2C342"
                         android:textSize="24sp"
                         android:textStyle="bold" />
@@ -65,7 +65,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
-                        android:text="SLOT MACHINE"
+                        android:text="@string/slotMachine_name"
                         android:textColor="#B5AD8A"
                         android:textSize="12sp"
                         android:textStyle="bold" />
@@ -87,7 +87,7 @@
                     android:layout_marginTop="14dp"
                     android:background="@drawable/display_v3"
                     android:gravity="center"
-                    android:text="Saldo: 250"
+                    android:text="@string/history_balance_p2"
                     android:textColor="#FFFFFF"
                     android:textSize="24sp"
                     android:textStyle="bold" />
@@ -131,7 +131,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:text="APUESTA"
+                    android:text="@string/bet_label"
                     android:textColor="#B9B199"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -215,7 +215,7 @@
                         android:layout_gravity="center"
                         android:clickable="true"
                         android:focusable="true"
-                        android:contentDescription="Botón de giro"
+                        android:contentDescription="@string/spin_button_description"
                         android:src="@drawable/push_button_red_v1" />
 
                 </FrameLayout>

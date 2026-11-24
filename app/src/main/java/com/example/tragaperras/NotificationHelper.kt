@@ -70,8 +70,8 @@ class NotificationHelper(private val context: Context) {
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("¡Victoria!")
-            .setContentText("¡Has ganado! Tiempo de resolución: $formattedTime s")
+            .setContentTitle(context.getString(R.string.notification_victory_title))
+            .setContentText(context.getString(R.string.notification_victory_message, formattedTime))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)

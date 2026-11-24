@@ -16,6 +16,16 @@
     <string name="exit">EXIT</string>
     <string name="error_restart">Error restarting the game</string>
     <string name="error_balance">Error reading the balance</string>
-    <string name="error_saving_history">"Error saving the spin and the balance"</string>
+    <string name="error_saving_history">Error saving the spin and the balance</string>
     <string name="insufficient_funds_bet">Insufficient balance</string>
+    <string name="bet_label">BET</string>
+    <string name="spin_button_description">Red spin button</string>
+    <string name="menu_overflow_description">Open navigation menu</string>
+    <string name="resolution_time_title">Resolution Time</string>
+    <string name="resolution_time_message">The winning spin took %1$s seconds to resolve.</string>
+    <string name="dialog_ok">OK</string>
+    <string name="notification_victory_title">Victory!</string>
+    <string name="notification_victory_message">You won! Resolution time: %1$s s</string>
+    <string name="settings_music_changed">Soundtrack updated</string>
+    <string name="settings_music_official">Official soundtrack</string>
 </resources>

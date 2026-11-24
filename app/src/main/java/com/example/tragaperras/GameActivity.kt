@@ -157,9 +157,9 @@ class GameActivity : AppCompatActivity() {
             intent.removeExtra(NotificationHelper.EXTRA_RESOLUTION_TIME)
             val formattedTime = String.format(Locale.getDefault(), "%.2f", durationSeconds)
             AlertDialog.Builder(this)
-                .setTitle("Tiempo de Resolución")
-                .setMessage("La tirada ganadora tardó $formattedTime segundos en resolverse.")
-                .setPositiveButton("Aceptar", null)
+                .setTitle(R.string.resolution_time_title)
+                .setMessage(getString(R.string.resolution_time_message, formattedTime))
+                .setPositiveButton(R.string.dialog_ok, null)
                 .show()
         }
     }

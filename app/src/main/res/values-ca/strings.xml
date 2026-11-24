@@ -16,6 +16,16 @@
     <string name="exit">SORTIR</string>
     <string name="error_restart">Error al reiniciar la partida</string>
     <string name="error_balance">Error al llegir el saldo</string>
-    <string name="error_saving_history">"Error al guardar la tirada i el saldo"</string>
+    <string name="error_saving_history">Error al guardar la tirada i el saldo</string>
     <string name="insufficient_funds_bet">Saldo insuficient</string>
+    <string name="bet_label">APOSTA</string>
+    <string name="spin_button_description">Botó vermell de gir</string>
+    <string name="menu_overflow_description">Obrir menú de navegació</string>
+    <string name="resolution_time_title">Temps de Resolució</string>
+    <string name="resolution_time_message">La tirada guanyadora ha trigat %1$s segons a resoldre\'s.</string>
+    <string name="dialog_ok">Acceptar</string>
+    <string name="notification_victory_title">Victòria!</string>
+    <string name="notification_victory_message">Has guanyat! Temps de resolució: %1$s s</string>
+    <string name="settings_music_changed">Música canviada</string>
+    <string name="settings_music_official">Música oficial</string>
 </resources>

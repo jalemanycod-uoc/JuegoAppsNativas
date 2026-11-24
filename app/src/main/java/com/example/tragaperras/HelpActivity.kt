@@ -26,7 +26,7 @@ class HelpActivity : AppCompatActivity() {
         }
 
         setSupportActionBar(findViewById(R.id.toolbar))
-        supportActionBar?.title = "Ayuda"
+        supportActionBar?.title = getString(R.string.menu_help)
 
         val webView = findViewById<WebView>(R.id.webViewHelp)
         webView.settings.javaScriptEnabled = true
