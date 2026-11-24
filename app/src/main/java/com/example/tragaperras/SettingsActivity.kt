@@ -40,6 +40,7 @@ class SettingsActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
 
+
         // Deja espacio para la barra de estado y la barra de navegación del móvil
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -101,19 +102,33 @@ class SettingsActivity : AppCompatActivity() {
             Toast.makeText(this, "Música oficial", Toast.LENGTH_SHORT).show()
         }
         // Clic en los botones de idioma
-        // Aquí solo pongo el sonido. Cambiar el idioma lo programa otro compañero
+        // Genera los efectos de sonido y cambia el idioma. Adicionalmente, al entrar en opciones, marca el radiobutton automáticamente del idioma actual
         val rbSpanish = findViewById<RadioButton>(R.id.rbSpanish)
         val rbCatalan = findViewById<RadioButton>(R.id.rbCatalan)
         val rbEnglish = findViewById<RadioButton>(R.id.rbEnglish)
 
+        val appLocales = AppCompatDelegate.getApplicationLocales()
+        val currentLocaleTag = appLocales.get(0)?.toLanguageTag() ?: "es"
+        when {
+            currentLocaleTag.startsWith("en") -> rbEnglish.isChecked = true
+            currentLocaleTag.startsWith("ca") -> rbCatalan.isChecked = true
+            else -> rbSpanish.isChecked = true
+        }
+
         rbSpanish.setOnClickListener {
             SoundManager.playEffect(this, R.raw.clic)
+            val localeList = LocaleListCompat.forLanguageTags("es")
+            AppCompatDelegate.setApplicationLocales(localeList)
         }
         rbCatalan.setOnClickListener {
             SoundManager.playEffect(this, R.raw.clic)
+            val localeList = LocaleListCompat.forLanguageTags("ca")
+            AppCompatDelegate.setApplicationLocales(localeList)
         }
         rbEnglish.setOnClickListener {
             SoundManager.playEffect(this, R.raw.clic)
+            val localeList = LocaleListCompat.forLanguageTags("en")
+            AppCompatDelegate.setApplicationLocales(localeList)
         }
     }
         override fun onResume() {

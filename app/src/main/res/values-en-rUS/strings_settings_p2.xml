@@ -15,6 +15,6 @@
     <string name="settings_catalan_p2">Català</string>
     <string name="settings_english_p2">English</string>
     <string name="settings_back_p2">GO BACK</string>
-    <string name="settings_choose_music_p2">Choose music</string>
-    <string name="settings_official_music_p2">Official music</string>
+    <string name="settings_choose_music_p2">Choose soundtrack</string>
+    <string name="settings_official_music_p2">Official soundtrack</string>
 </resources>
