@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="menu_home">Home</string>
+    <string name="menu_play">Play</string>
+    <string name="menu_history">History</string>
+    <string name="menu_options">Settings</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_exit">Exit</string>
+    <string name="settings_title_p2">SETTINGS</string>
+    <string name="settings_subtitle_p2">WASTELAND CONFIGURATION</string>
+    <string name="settings_music_p2">MUSIC</string>
+    <string name="settings_effects_p2">SOUND EFFECTS</string>
+    <string name="settings_language_p2">LANGUAGE</string>
+    <string name="settings_spanish_p2">Español</string>
+    <string name="settings_catalan_p2">Català</string>
+    <string name="settings_english_p2">English</string>
+    <string name="settings_back_p2">GO BACK</string>
+    <string name="settings_choose_music_p2">Choose music</string>
+    <string name="settings_official_music_p2">Official music</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="menu_home">Inici</string>
+    <string name="menu_play">Jugar</string>
+    <string name="menu_history">Historial</string>
+    <string name="menu_options">Configuració</string>
+    <string name="menu_help">Ajuda</string>
+    <string name="menu_exit">Sortir</string>
+    <string name="settings_title_p2">Configuració</string>
+    <string name="settings_subtitle_p2">CONFIGURACIÓ DE L\'ERM</string>
+    <string name="settings_music_p2">MÚSICA</string>
+    <string name="settings_effects_p2">EFECTES DE SO</string>
+    <string name="settings_language_p2">IDIOMA</string>
+    <string name="settings_spanish_p2">Español</string>
+    <string name="settings_catalan_p2">Català</string>
+    <string name="settings_english_p2">English</string>
+    <string name="settings_back_p2">TORNAR</string>
+    <string name="settings_choose_music_p2">Triar música</string>
+    <string name="settings_official_music_p2">Música oficial</string>
+</resources>

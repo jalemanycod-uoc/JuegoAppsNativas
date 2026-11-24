@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">Tragaperras</string>
+    <string name="good_luck">¡BUENA SUERTE!</string>
+    <string name="slotMachine_name">TRAGAPERRAS DEL YERMO</string>
+    <string name="game_name">Partida de: %1$s</string>
+    <string name="no_prize">SIN PREMIO</string>
+    <string name="defeat_message">Has perdido %1$d fichas</string>
+    <string name="try_again">VOLVER A APOSTAR</string>
+    <string name="prize_two">DOS IGUALES</string>
+    <string name="prize_three">TRES IGUALES</string>
+    <string name="win_count">+%1$d fichas</string>
+    <string name="lose_count">-%1$d fichas</string>
+    <string name="game_ended">FIN DEL JUEGO</string>
+    <string name="insufficient_funds">No tienes fichas suficientes para seguir apostando.</string>
+    <string name="restart">REINICIAR</string>
+    <string name="exit">SALIR</string>
+    <string name="error_restart">Error al reiniciar la partida</string>
+    <string name="error_balance">Error al leer el saldo</string>
+    <string name="error_saving_history">"Error al guardar la tirada y el saldo"</string>
+    <string name="insufficient_funds_bet">Saldo insuficiente</string>
 </resources>

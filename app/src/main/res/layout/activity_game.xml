@@ -108,7 +108,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="LOS"
+                            android:text="@string/home_brand_prefix"
                             android:textColor="#FF9F3B"
                             android:textSize="11sp"
                             android:textStyle="bold" />
@@ -117,7 +117,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="APKPOCALÍPTICOS"
+                            android:text="@string/home_brand_name"
                             android:textColor="#B6FF39"
                             android:textSize="21sp"
                             android:textStyle="bold" />
@@ -125,7 +125,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="TRAGAPERRAS DEL YERMO"
+                            android:text="@string/slotMachine_name"
                             android:textColor="#E4CFA7"
                             android:textSize="8sp"
                             android:textStyle="bold" />
@@ -137,17 +137,17 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="Saldo: 250"
+                        android:text="@string/history_balance_p2"
                         android:textColor="#FFFFFF"
                         android:textSize="21sp"
                         android:textStyle="bold"
-                        app:layout_constraintWidth_default="percent"
-                        app:layout_constraintWidth_percent="0.49"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintVertical_bias="0.263" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.263"
+                        app:layout_constraintWidth_default="percent"
+                        app:layout_constraintWidth_percent="0.49" />
 
                     <!--
                         Rodillos animados reales: NO son imágenes estáticas.
@@ -279,17 +279,17 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="¡BUENA SUERTE!"
+                        android:text="@string/good_luck"
                         android:textColor="#B6FF52"
                         android:textSize="13sp"
                         android:textStyle="bold"
-                        app:layout_constraintWidth_default="percent"
-                        app:layout_constraintWidth_percent="0.62"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintVertical_bias="0.927" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.927"
+                        app:layout_constraintWidth_default="percent"
+                        app:layout_constraintWidth_percent="0.62" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </FrameLayout>
         </LinearLayout>

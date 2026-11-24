@@ -89,7 +89,7 @@ class GameActivity : AppCompatActivity() {
         if (!nameFromWelcome.isNullOrBlank()) {
             playerName = nameFromWelcome
         }
-        supportActionBar?.title = "Partida de $playerName"
+        supportActionBar?.title = resources.getString(R.string.game_name, playerName)
 
         locationHelper = LocationHelper(this)
         notificationHelper = NotificationHelper(this)
@@ -121,12 +121,13 @@ class GameActivity : AppCompatActivity() {
                     }
                 },
                 {
-                    Toast.makeText(this, "Error al leer el saldo", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, resources.getString(R.string.error_balance), Toast.LENGTH_SHORT).show()
                 }
             )
         )
 
         rgBets.setOnCheckedChangeListener { _, checkedId ->
+            SoundManager.playEffect(this, R.raw.clic)
             when (checkedId) {
                 R.id.rbBet10 -> onBetSelected(10)
                 R.id.rbBet25 -> onBetSelected(25)
@@ -192,18 +193,40 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Música de la partida ( es otra diferente a la del menú)
+        SoundManager.playMusic(this, R.raw.musica_partida)
+    }
+
+    // Se avisa a SoundManager que esta pantalla empieza a verse
+    override fun onStart() {
+        super.onStart()
+        SoundManager.screenStarted()
+    }
+
+    // Se avisa a SoundManager que esta pantalla deja de verse
+    override fun onStop() {
+        super.onStop()
+        SoundManager.screenStopped()
+        // Si se sale mientras giran los rodillos, que no se quede sonando
+        SoundManager.stopSpin()
+    }
+
     fun onBetSelected(bet: Int) {
         selectedBet = bet
     }
 
     fun onMachineButtonPressed() {
         if (selectedBet > balance) {
-            Toast.makeText(this, "Saldo insuficiente", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, resources.getString(R.string.insufficient_funds_bet), Toast.LENGTH_SHORT).show()
             UiAnimations.shake(btnMachine)
             return
         }
 
         btnMachine.isEnabled = false
+        // Empieza el sonido de los rodillos girando
+        SoundManager.playSpin(this)
 
         spinStartTime = System.currentTimeMillis()
 
@@ -226,6 +249,8 @@ class GameActivity : AppCompatActivity() {
         reelAnimator.animateReel(ivReel1, result.reel1, 1400L) { }
         reelAnimator.animateReel(ivReel2, result.reel2, 1900L) { }
         reelAnimator.animateReel(ivReel3, result.reel3, 2500L) {
+            // El último rodillo se ha parado: se para el sonido de giro
+            SoundManager.stopSpin()
             val durationSeconds = (System.currentTimeMillis() - spinStartTime) / 1000.0
             val finalResult = result.copy(latitude = currentLat, longitude = currentLng)
             // Dejamos 750 ms para observar los símbolos finales.
@@ -242,7 +267,7 @@ class GameActivity : AppCompatActivity() {
                 { },
                 {
                     Toast.makeText(
-                        this, "Error al guardar la tirada y el saldo", Toast.LENGTH_LONG
+                        this, resources.getString(R.string.error_saving_history), Toast.LENGTH_LONG
                     ).show()
                 }
             )
@@ -264,6 +289,7 @@ class GameActivity : AppCompatActivity() {
         when (result.outcome) {
             Outcome.JACKPOT -> {
                 notificationHelper.sendVictoryNotification(durationSeconds)
+                SoundManager.playEffect(this, R.raw.jackpot)
                 UiAnimations.jackpotPulse(ivReel1)
                 UiAnimations.jackpotPulse(ivReel2)
                 UiAnimations.jackpotPulse(ivReel3)
@@ -272,6 +298,14 @@ class GameActivity : AppCompatActivity() {
 
             Outcome.WIN -> {
                 notificationHelper.sendVictoryNotification(durationSeconds)
+                // Salen tres iguales? Al quitar los repetidos, queda un solo símbolo
+                val symbols = listOf(result.reel1, result.reel2, result.reel3)
+                val threeOfAKind = symbols.distinct().size == 1
+                if (threeOfAKind) {
+                    SoundManager.playEffect(this, R.raw.tres_iguales)
+                } else {
+                    SoundManager.playEffect(this, R.raw.monedas)
+                }
                 animateWinningReels(result)
                 reelArea.postDelayed({ showResultDialog(result) }, 400L)
             }
@@ -279,8 +313,12 @@ class GameActivity : AppCompatActivity() {
             Outcome.LOSS -> {
                 UiAnimations.shake(tvBalance)
                 if (balance < GameRules.VALID_BETS.min()) {
+                    // Se ha quedado sin fichas (sonido de perder la partida)
+                    SoundManager.playEffect(this, R.raw.perder_partida)
                     reelArea.postDelayed({ showGameOverDialog(result) }, 350L)
                 } else {
+                    // Sin premio (sonido de perder)
+                    SoundManager.playEffect(this, R.raw.perder)
                     reelArea.postDelayed({ showResultDialog(result) }, 350L)
                 }
             }
@@ -319,12 +357,13 @@ class GameActivity : AppCompatActivity() {
         ivResult1.setImageResource(drawableFor(result.reel1))
         ivResult2.setImageResource(drawableFor(result.reel2))
         ivResult3.setImageResource(drawableFor(result.reel3))
-        tvDialogBalance.text = "Saldo: $balance fichas"
+        tvDialogBalance.text = resources.getString(R.string.history_balance_p2, balance)
+
 
         when (result.outcome) {
             Outcome.JACKPOT -> {
-                tvTitle.text = "¡JACKPOT!"
-                tvMessage.text = "+${result.prize} fichas"
+                tvTitle.text = resources.getString(R.string.history_jackpot_p2)
+                tvMessage.text = resources.getString(R.string.win_count, result.prize)
             }
             Outcome.WIN -> {
                 val threeOfAKind = listOf(
@@ -332,16 +371,16 @@ class GameActivity : AppCompatActivity() {
                     result.reel2,
                     result.reel3
                 ).distinct().size == 1
-                tvTitle.text = if (threeOfAKind) "¡TRES IGUALES!" else "¡DOS IGUALES!"
-                tvMessage.text = "+${result.prize} fichas"
+                tvTitle.text = if (threeOfAKind) resources.getString(R.string.prize_three) else resources.getString(R.string.prize_two)
+                tvMessage.text = resources.getString(R.string.win_count, result.prize)
             }
             Outcome.LOSS -> {
-                tvTitle.text = "SIN PREMIO"
-                tvMessage.text = "Has perdido $selectedBet fichas"
+                tvTitle.text = resources.getString(R.string.no_prize)
+                tvMessage.text = resources.getString(R.string.defeat_message, selectedBet)
             }
         }
 
-        btnPrimary.text = "VOLVER A APOSTAR"
+        btnPrimary.text = resources.getString(R.string.try_again)
 
         val dialog = AlertDialog.Builder(this)
             .setView(view)
@@ -352,6 +391,7 @@ class GameActivity : AppCompatActivity() {
         configureResultDialog(dialog)
 
         btnPrimary.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             dialog.dismiss()
             updateBalanceNeutral()
             btnMachine.isEnabled = true
@@ -376,9 +416,9 @@ class GameActivity : AppCompatActivity() {
         val btnPrimary = view.findViewById<Button>(R.id.btnResultPrimary)
         val btnSecondary = view.findViewById<Button>(R.id.btnResultSecondary)
 
-        tvTitle.text = "FIN DEL JUEGO"
-        tvMessage.text = "No tienes fichas suficientes para seguir apostando."
-        tvDialogBalance.text = "Saldo: $balance fichas"
+        tvTitle.text = resources.getString(R.string.game_ended)
+        tvMessage.text = resources.getString(R.string.insufficient_funds)
+        tvDialogBalance.text = resources.getString(R.string.history_balance_p2, balance)
 
         if (lastResult != null) {
             ivResult1.setImageResource(drawableFor(lastResult.reel1))
@@ -390,8 +430,8 @@ class GameActivity : AppCompatActivity() {
             ivResult3.visibility = View.GONE
         }
 
-        btnPrimary.text = "REINICIAR"
-        btnSecondary.text = "SALIR"
+        btnPrimary.text = resources.getString(R.string.restart)
+        btnSecondary.text = resources.getString(R.string.exit)
         btnSecondary.visibility = View.VISIBLE
 
         val dialog = AlertDialog.Builder(this)
@@ -403,6 +443,7 @@ class GameActivity : AppCompatActivity() {
         configureResultDialog(dialog)
 
         btnPrimary.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             btnPrimary.isEnabled = false
             // startNewGame actualiza tanto saldo como número de partida en SQLite.
             disposables.add(
@@ -415,13 +456,14 @@ class GameActivity : AppCompatActivity() {
                     },
                     {
                         btnPrimary.isEnabled = true
-                        Toast.makeText(this, "Error al reiniciar la partida", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, resources.getString(R.string.error_restart), Toast.LENGTH_LONG).show()
                     }
                 )
             )
         }
 
         btnSecondary.setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             dialog.dismiss()
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
@@ -483,7 +525,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun updateBalanceDisplay(amount: Int, color: Int) {
-        tvBalance.text = "Saldo: $amount"
+        tvBalance.text = resources.getString(R.string.history_balance_p2, amount)
         tvBalance.setTextColor(color)
     }
 

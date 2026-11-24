@@ -52,8 +52,12 @@ class HistoryActivity : AppCompatActivity() {
         lvHistory = findViewById(R.id.lvHistory)
         emptyHistory = findViewById(R.id.tvHistoryEmpty)
 
-        findViewById<View>(R.id.btnBack).setOnClickListener { finish() }
+        findViewById<View>(R.id.btnBack).setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
+            finish()
+        }
         findViewById<View>(R.id.btnBackToGame).setOnClickListener {
+            SoundManager.playEffect(this, R.raw.clic)
             openExistingGameOrHome()
         }
 
@@ -67,6 +71,19 @@ class HistoryActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         loadHistory()
+        // Música del menú (continua la música que sonaba en el menú sin empezar de cero)
+        SoundManager.playMusic(this, R.raw.musica_menu)
+    }
+    // Avisamos a SoundManager que esta pantalla empieza a verse
+    override fun onStart() {
+        super.onStart()
+        SoundManager.screenStarted()
+    }
+
+    // Avisamos a SoundManager que esta pantalla deja de verse
+    override fun onStop() {
+        super.onStop()
+        SoundManager.screenStopped()
     }
 
     private fun loadHistory() {

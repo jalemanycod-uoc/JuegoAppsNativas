@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="history_title_p2">HISTORY</string>
+    <string name="history_subtitle_p2">GAME REGISTRY</string>
+    <string name="history_back_p2">BACK</string>
+    <string name="history_back_game_p2">RETURN TO GAME</string>
+    <string name="history_back_home_p2">RETURN TO MAIN MENU</string>
+    <string name="history_empty_p2">No spins have been registered.</string>
+    <string name="history_error_p2">Error reading the history.</string>
+    <string name="history_win_p2">VICTORY</string>
+    <string name="history_loss_p2">DEFEAT</string>
+    <string name="history_jackpot_p2">JACKPOT</string>
+    <string name="history_net_p2">%1$s tokens</string>
+    <string name="history_bet_p2">Bet: %1$d</string>
+    <string name="history_balance_p2">Balance: %1$d</string>
+</resources>
