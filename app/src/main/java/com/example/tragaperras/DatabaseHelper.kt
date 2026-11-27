@@ -12,7 +12,7 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         const val DATABASE_NAME = "tragaperras.db"
-        const val DATABASE_VERSION = 2   // NUEVO: subimos la versión porque cambian las tablas
+        const val DATABASE_VERSION = 3   // Versión 3: se añade la ubicación de cada tirada
     }
 
     // Crea la tablas y se ejecuta solo la primera vez
@@ -53,15 +53,17 @@ class DatabaseHelper(context: Context) :
         )
     }
 
-    // Se ejecuta si cambiamos DATABASE_VERSION
+    // Se ejecuta cuando el móvil tiene una versión antigua de la base de datos
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion < 2) {
-            db.execSQL("ALTER TABLE game_results ADD COLUMN latitude REAL")
-            db.execSQL("ALTER TABLE game_results ADD COLUMN longitude REAL")
-        } else {
+            // La versión 1 tenía unas tablas muy diferentes: las borramos y las creamos de nuevo
             db.execSQL("DROP TABLE IF EXISTS game_results")
             db.execSQL("DROP TABLE IF EXISTS player_state")
             onCreate(db)
+        } else if (oldVersion < 3) {
+            // De la versión 2 a la 3: añadimos las columnas de la ubicación sin borrar el historial
+            db.execSQL("ALTER TABLE game_results ADD COLUMN latitude REAL")
+            db.execSQL("ALTER TABLE game_results ADD COLUMN longitude REAL")
         }
     }
 
